@@ -2,7 +2,7 @@ import type {NextPage} from 'next';
 import Layout from '../components/Layout';
 import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography} from '@material-ui/core';
 
-import data from '../../utils/data';
+import data from '../utils/data';
 
 const Home: NextPage = () => {
   return (
