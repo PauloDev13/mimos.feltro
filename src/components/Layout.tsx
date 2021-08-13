@@ -5,6 +5,8 @@ import {AppBar, Container, Link, Toolbar, Typography} from '@material-ui/core';
 import useStyles from '../utils/styles';
 
 interface LayoutProps {
+  title?: string;
+  description?: string;
   children?: any;
 }
 
@@ -14,7 +16,8 @@ function Layout(props: LayoutProps) {
   return (
     <div>
       <Head>
-        <title>Next Amazonas</title>
+        <title>{props.title ? `${props.title} - Next Amazona` : 'Next Amazona'}</title>
+        {props.description && <meta name={'description'} content={props.description}></meta>}
       </Head>
       <AppBar className={classes.navbar} position={'static'}>
         <Toolbar>
