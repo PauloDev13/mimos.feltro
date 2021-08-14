@@ -16,6 +16,7 @@ const initialState: StateProps = {
 
 interface ContextProps {
   state: StateProps,
+  // eslint-disable-next-line no-unused-vars
   dispatch: (type: ActionProps) => void
 }
 

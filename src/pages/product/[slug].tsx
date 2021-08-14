@@ -1,17 +1,20 @@
-import {useRouter} from 'next/router';
-import {Button, Card, Grid, Link, List, ListItem, Typography} from '@material-ui/core';
 import NextLink from 'next/link';
 import Image from 'next/image';
+import {Button, Card, Grid, Link, List, ListItem, Typography} from '@material-ui/core';
 
-import data from '../../utils/data';
-import Layout from '../../components/Layout';
 import useStyles from '../../utils/styles';
+import db from '../../utils/db';
+import {IProduct} from '../../interfaces/IProduct';
+import Product from '../../model/Product';
+import Layout from '../../components/Layout';
 
-export default function ProductScreen() {
+interface ProductScreenProps {
+  product: IProduct;
+}
+
+export default function ProductScreen(props: ProductScreenProps) {
+  const {product} = props;
   const classes = useStyles();
-  const router = useRouter();
-  const {slug} = router.query;
-  const product = data.products.find((a) => a.slug === slug);
 
   if (!product) {
     return <div>Product Not Found</div>;
@@ -91,4 +94,18 @@ export default function ProductScreen() {
       </Grid>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const {params} = context;
+  const {slug} = params;
+  await db.connect();
+  const product: IProduct = await Product.findOne({slug}).lean();
+  await db.disconnected();
+
+  return {
+    props: {
+      product: db.convertDocToObj(product)
+    }
+  };
 }

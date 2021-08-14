@@ -1,20 +1,7 @@
-export interface Product {
-  name: string;
-  slug: string;
-  category: string;
-  image: string;
-  // isFeatured: boolean;
-  // featuredImage: string;
-  price: number;
-  brand: string;
-  rating: number;
-  numReviews: number;
-  countInStock: number;
-  description: string;
-}
+import {IProduct} from '../interfaces/IProduct';
 
 interface IData {
-  products: Product[];
+  products: IProduct[];
 }
 
 const data: IData = {
