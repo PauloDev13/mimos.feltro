@@ -1,8 +1,22 @@
+import {useContext} from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 
-import {AppBar, Container, createTheme, CssBaseline, Link, ThemeProvider, Toolbar, Typography} from '@material-ui/core';
+import {
+  AppBar,
+  Container,
+  createTheme,
+  CssBaseline,
+  Link,
+  Switch,
+  ThemeProvider,
+  Toolbar,
+  Typography
+} from '@material-ui/core';
 import useStyles from '../utils/styles';
+import {Store} from '../utils/Store';
+import {NextPage} from 'next';
+import Cookies from 'js-cookie';
 
 interface LayoutProps {
   title?: string;
@@ -10,7 +24,9 @@ interface LayoutProps {
   children?: any;
 }
 
-function Layout(props: LayoutProps) {
+const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
+  const {state, dispatch} = useContext(Store);
+  const {darkMode} = state;
   const theme = createTheme({
     typography: {
       h1: {
@@ -25,22 +41,30 @@ function Layout(props: LayoutProps) {
       }
     },
     palette: {
-      type: 'light',
+      type: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#f0c000'
+        main: darkMode ? '#f0c000' : '#082578'
       },
       secondary: {
-        main: '#208080'
+        main: darkMode ? '#208080' : '#043a3a'
       }
     }
   });
+
   const classes = useStyles();
 
+  const darkModeHandler = () => {
+    dispatch({type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON'});
+    const newDarkMode = !darkMode;
+    Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
+  };
+
+  // @ts-ignore
   return (
     <div>
       <Head>
-        <title>{props.title ? `${props.title} - Next Amazona` : 'Next Amazona'}</title>
-        {props.description && <meta name={'description'} content={props.description}></meta>}
+        <title>{title ? `${title} - Next Amazona` : 'Next Amazona'}</title>
+        {description && <meta name={'description'} content={description}></meta>}
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline/>
@@ -53,6 +77,7 @@ function Layout(props: LayoutProps) {
             </NextLink>
             <div className={classes.grow}></div>
             <div>
+              <Switch checked={darkMode} onChange={darkModeHandler}/>
               <NextLink href={'/cart'} passHref>
                 <Link>Cart</Link>
               </NextLink>
@@ -63,7 +88,7 @@ function Layout(props: LayoutProps) {
           </Toolbar>
         </AppBar>
         <Container className={classes.main}>
-          {props.children}
+          {children}
         </Container>
         <footer className={classes.footer}>
           <Typography>All rights reserved. Next Amazona</Typography>
