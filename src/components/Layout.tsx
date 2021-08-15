@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 
 import {
   AppBar,
+  Badge,
   Container,
   createTheme,
   CssBaseline,
@@ -26,7 +27,7 @@ interface LayoutProps {
 
 const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
   const {state, dispatch} = useContext(Store);
-  const {darkMode} = state;
+  const {darkMode, cart} = state;
   const theme = createTheme({
     typography: {
       h1: {
@@ -58,7 +59,6 @@ const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
     const newDarkMode = !darkMode;
     Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
   };
-
   // @ts-ignore
   return (
     <div>
@@ -79,7 +79,15 @@ const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
             <div>
               <Switch checked={darkMode} onChange={darkModeHandler}/>
               <NextLink href={'/cart'} passHref>
-                <Link>Cart</Link>
+                <Link>
+                  {cart.cartItems.length > 0 ? (
+                    <Badge color={'secondary'} badgeContent={cart.cartItems.length}>
+                      Cart
+                    </Badge>
+                  ) : (
+                    'Cart'
+                  )}
+                </Link>
               </NextLink>
               <NextLink href={'/login'} passHref>
                 <Link>Login</Link>

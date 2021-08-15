@@ -1,17 +1,27 @@
 import {createContext, useReducer} from 'react';
 import {NextPage} from 'next';
 import Cookies from 'js-cookie';
+import {IProduct} from '../interfaces/IProduct';
 
 interface StateProps {
   darkMode: boolean;
+  cart: {
+    cartItems: IProduct[]
+  };
 }
 
 interface ActionProps {
   type: string;
+  payload?: any;
 }
 
+const cookie = Cookies.get('cartItems');
+
 const initialState: StateProps = {
-  darkMode: Cookies.get('darkMode') === 'ON'
+  darkMode: Cookies.get('darkMode') === 'ON',
+  cart: {
+    cartItems: cookie && cookie ? JSON.parse(cookie) : []
+  }
 };
 
 interface ContextProps {
@@ -32,6 +42,21 @@ const reducer = (state: StateProps, action: ActionProps) => {
       return {...state, darkMode: true};
     case 'DARK_MODE_OFF':
       return {...state, darkMode: false};
+    case 'CART_ADD_ITEM': {
+      const newItem = action.payload;
+
+      const existItem = state.cart.cartItems.find(
+        item => item._id === newItem._id
+      );
+
+      const cartItems: IProduct[] = existItem ? state.cart.cartItems.map(
+        item => item.name === existItem.name ? newItem : item
+      ) : [...state.cart.cartItems, newItem];
+
+      Cookies.set('cartItems', JSON.stringify(cartItems));
+
+      return {...state, cart: {...state.cart, cartItems}};
+    }
     default:
       return state;
   }
