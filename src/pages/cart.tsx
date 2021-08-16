@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import axios from 'axios';
 
 import {
   Button,
@@ -22,14 +23,30 @@ import {
 } from '@material-ui/core';
 
 import { Store } from '../utils/Store';
+import useStyles from '../utils/styles';
 import Layout from '../components/Layout';
+import { IProduct } from '../interfaces/IProduct';
 
 const CartScreen = () => {
-  const { state } = useContext(Store);
+  const classes = useStyles();
+  const { state, dispatch } = useContext(Store);
   const {
     cart: { cartItems },
   } = state;
   // const {cartItems} = state.cart
+
+  const updateCartHandler = async (item: IProduct, quantity: Number) => {
+    const { data } = await axios.get(`/api/product/${item._id}`);
+    if (data.countInStock < quantity) {
+      window.alert('Desculpe. Esse produto está fora de estoque!');
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+  };
+
+  const removeItemHandler = async (item: IProduct) => {
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+  };
 
   return (
     <Layout title={'Carrinho de Compras'}>
@@ -37,10 +54,10 @@ const CartScreen = () => {
         Carrinho de Compras
       </Typography>
       {cartItems.length === 0 ? (
-        <div>
+        <div className={classes.divLink}>
           O Carrinho está vazio.{' '}
           <NextLink href={'/'} passHref>
-            Que tal começar clicando aqui?
+            <Link>Que tal começar clicando aqui?</Link>
           </NextLink>
         </div>
       ) : (
@@ -83,7 +100,12 @@ const CartScreen = () => {
                       </TableCell>
 
                       <TableCell align={'right'}>
-                        <Select value={item.quantity}>
+                        <Select
+                          value={item.quantity}
+                          onChange={(e: any) =>
+                            updateCartHandler(item, e.target.value)
+                          }
+                        >
                           {[...Array(item.countInStock).keys()].map((x) => (
                             <MenuItem key={x + 1} value={x + 1}>
                               {x + 1}
@@ -95,7 +117,11 @@ const CartScreen = () => {
                       <TableCell align={'right'}>${item.price}</TableCell>
 
                       <TableCell align={'right'}>
-                        <Button variant={'contained'} color={'secondary'}>
+                        <Button
+                          onClick={() => removeItemHandler(item)}
+                          variant={'contained'}
+                          color={'secondary'}
+                        >
                           x
                         </Button>
                       </TableCell>

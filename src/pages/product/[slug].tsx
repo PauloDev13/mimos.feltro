@@ -27,7 +27,7 @@ interface ProductScreenProps {
 }
 
 function ProductScreen(props: ProductScreenProps) {
-  const { dispatch } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const { product } = props;
   const classes = useStyles();
 
@@ -36,12 +36,18 @@ function ProductScreen(props: ProductScreenProps) {
   }
 
   const addToCartHandler = async () => {
+    const existItem = state.cart.cartItems.find(
+      (item: IProduct) => item._id === product._id,
+    );
+    const quantity = existItem ? existItem.quantity! + 1 : 1;
+
     const { data } = await axios.get(`/api/product/${product._id}`);
-    if (data.countInStock <= 0) {
+    if (data.countInStock < quantity) {
       window.alert('Desculpe. Esse produto está fora de estoque!');
+      return;
     }
 
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
     await router.push('/cart');
   };
 

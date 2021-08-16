@@ -16,12 +16,33 @@ import Layout from '../components/Layout';
 import db from '../utils/db';
 import Product from '../model/Product';
 import { IProduct } from '../interfaces/IProduct';
+import axios from 'axios';
+import router from 'next/router';
+import { useContext } from 'react';
+import { Store } from '../utils/Store';
 
 interface IProducts {
   products: IProduct[];
 }
 
 const Home: NextPage<IProducts> = ({ products }) => {
+  const { state, dispatch } = useContext(Store);
+
+  const addToCartHandler = async (product: IProduct) => {
+    const existItem = state.cart.cartItems.find(
+      (item: IProduct) => item._id === product._id,
+    );
+    const quantity = existItem ? existItem.quantity! + 1 : 1;
+
+    const { data } = await axios.get(`/api/product/${product._id}`);
+    if (data.countInStock < quantity) {
+      window.alert('Desculpe. Esse produto está fora de estoque!');
+      return;
+    }
+
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+    await router.push('/cart');
+  };
   return (
     <Layout>
       <div>
@@ -44,7 +65,11 @@ const Home: NextPage<IProducts> = ({ products }) => {
                 </NextLink>
                 <CardActions>
                   <Typography>${product.price}</Typography>
-                  <Button size={'small'} color={'primary'}>
+                  <Button
+                    onClick={() => addToCartHandler(product)}
+                    size={'small'}
+                    color={'primary'}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>

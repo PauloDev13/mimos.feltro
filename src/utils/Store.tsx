@@ -1,12 +1,12 @@
-import {createContext, useReducer} from 'react';
-import {NextPage} from 'next';
+import { createContext, useReducer } from 'react';
+import { NextPage } from 'next';
 import Cookies from 'js-cookie';
-import {IProduct} from '../interfaces/IProduct';
+import { IProduct } from '../interfaces/IProduct';
 
 interface StateProps {
   darkMode: boolean;
   cart: {
-    cartItems: IProduct[]
+    cartItems: IProduct[];
   };
 }
 
@@ -20,14 +20,14 @@ const cookie = Cookies.get('cartItems');
 const initialState: StateProps = {
   darkMode: Cookies.get('darkMode') === 'ON',
   cart: {
-    cartItems: cookie && cookie ? JSON.parse(cookie) : []
-  }
+    cartItems: cookie && cookie ? JSON.parse(cookie) : [],
+  },
 };
 
 interface ContextProps {
-  state: StateProps,
+  state: StateProps;
   // eslint-disable-next-line no-unused-vars
-  dispatch: (type: ActionProps) => void
+  dispatch: (type: ActionProps) => void;
 }
 
 export const Store = createContext<ContextProps>({
@@ -46,15 +46,24 @@ const reducer = (state: StateProps, action: ActionProps) => {
       const newItem = action.payload;
 
       const existItem = state.cart.cartItems.find(
-        item => item._id === newItem._id
+        (item) => item._id === newItem._id,
       );
 
-      const cartItems: IProduct[] = existItem ? state.cart.cartItems.map(
-        item => item.name === existItem.name ? newItem : item
-      ) : [...state.cart.cartItems, newItem];
+      const cartItems: IProduct[] = existItem
+        ? state.cart.cartItems.map((item) =>
+          item.name === existItem.name ? newItem : item,
+        )
+        : [...state.cart.cartItems, newItem];
 
       Cookies.set('cartItems', JSON.stringify(cartItems));
+      return {...state, cart: {...state.cart, cartItems}};
+    }
+    case 'CART_REMOVE_ITEM': {
+      const cartItems = state.cart.cartItems.filter(
+        (item) => item._id !== action.payload._id,
+      );
 
+      Cookies.set('cartItems', JSON.stringify(cartItems));
       return {...state, cart: {...state.cart, cartItems}};
     }
     default:
