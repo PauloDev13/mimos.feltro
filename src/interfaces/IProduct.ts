@@ -6,6 +6,7 @@ export interface IProduct {
   image: string;
   // isFeatured: boolean;
   // featuredImage: string;
+  quantity?: number;
   price: number;
   brand: string;
   rating: number;

@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import { useContext } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 
@@ -12,11 +12,11 @@ import {
   Switch,
   ThemeProvider,
   Toolbar,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import useStyles from '../utils/styles';
-import {Store} from '../utils/Store';
-import {NextPage} from 'next';
+import { Store } from '../utils/Store';
+import { NextPage } from 'next';
 import Cookies from 'js-cookie';
 
 interface LayoutProps {
@@ -25,49 +25,51 @@ interface LayoutProps {
   children?: any;
 }
 
-const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
-  const {state, dispatch} = useContext(Store);
-  const {darkMode, cart} = state;
+const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
+  const { state, dispatch } = useContext(Store);
+  const { darkMode, cart } = state;
   const theme = createTheme({
     typography: {
       h1: {
         fontSize: '1.6rem',
         fontWeight: 400,
-        margin: '1rem 0'
+        margin: '1rem 0',
       },
       h2: {
         fontSize: '1.4rem',
         fontWeight: 400,
-        margin: '1rem 0'
-      }
+        margin: '1rem 0',
+      },
     },
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
-        main: darkMode ? '#f0c000' : '#082578'
+        main: darkMode ? '#f0c000' : '#082578',
       },
       secondary: {
-        main: darkMode ? '#208080' : '#043a3a'
-      }
-    }
+        main: darkMode ? '#208080' : '#043a3a',
+      },
+    },
   });
 
   const classes = useStyles();
 
   const darkModeHandler = () => {
-    dispatch({type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON'});
+    dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
     const newDarkMode = !darkMode;
     Cookies.set('darkMode', newDarkMode ? 'ON' : 'OFF');
   };
-  // @ts-ignore
+
   return (
     <div>
       <Head>
         <title>{title ? `${title} - Next Amazona` : 'Next Amazona'}</title>
-        {description && <meta name={'description'} content={description}></meta>}
+        {description && (
+          <meta name={'description'} content={description}></meta>
+        )}
       </Head>
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
+        <CssBaseline />
         <AppBar className={classes.navbar} position={'static'}>
           <Toolbar>
             <NextLink href={'/'} passHref>
@@ -77,11 +79,14 @@ const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
             </NextLink>
             <div className={classes.grow}></div>
             <div>
-              <Switch checked={darkMode} onChange={darkModeHandler}/>
+              <Switch checked={darkMode} onChange={darkModeHandler} />
               <NextLink href={'/cart'} passHref>
                 <Link>
                   {cart.cartItems.length > 0 ? (
-                    <Badge color={'secondary'} badgeContent={cart.cartItems.length}>
+                    <Badge
+                      color={'secondary'}
+                      badgeContent={cart.cartItems.length}
+                    >
                       Cart
                     </Badge>
                   ) : (
@@ -95,9 +100,7 @@ const Layout: NextPage<LayoutProps> = ({title, description, children}) => {
             </div>
           </Toolbar>
         </AppBar>
-        <Container className={classes.main}>
-          {children}
-        </Container>
+        <Container className={classes.main}>{children}</Container>
         <footer className={classes.footer}>
           <Typography>All rights reserved. Next Amazona</Typography>
         </footer>

@@ -1,23 +1,34 @@
+import router from 'next/router';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
-import {Button, Card, Grid, Link, List, ListItem, Typography} from '@material-ui/core';
+
+import {
+  Button,
+  Card,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  Typography,
+} from '@material-ui/core';
 
 import useStyles from '../../utils/styles';
 import db from '../../utils/db';
-import {IProduct} from '../../interfaces/IProduct';
+import { IProduct } from '../../interfaces/IProduct';
 import Product from '../../model/Product';
 import Layout from '../../components/Layout';
-import {useContext} from 'react';
-import {Store} from '../../utils/Store';
+import { useContext } from 'react';
+import { Store } from '../../utils/Store';
+import dynamic from 'next/dynamic';
 
 interface ProductScreenProps {
   product: IProduct;
 }
 
-export default function ProductScreen(props: ProductScreenProps) {
-  const {dispatch} = useContext(Store);
-  const {product} = props;
+function ProductScreen(props: ProductScreenProps) {
+  const { dispatch } = useContext(Store);
+  const { product } = props;
   const classes = useStyles();
 
   if (!product) {
@@ -25,8 +36,13 @@ export default function ProductScreen(props: ProductScreenProps) {
   }
 
   const addToCartHandler = async () => {
-    const {data} = await axios.get(`/api/product/${product._id}`);
-    dispatch({type: 'CART_ADD_ITEM', payload: {...product, quantity: 1}});
+    const { data } = await axios.get(`/api/product/${product._id}`);
+    if (data.countInStock <= 0) {
+      window.alert('Desculpe. Esse produto está fora de estoque!');
+    }
+
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
+    await router.push('/cart');
   };
 
   return (
@@ -40,7 +56,13 @@ export default function ProductScreen(props: ProductScreenProps) {
       </div>
       <Grid container spacing={1}>
         <Grid item md={6} xs={12}>
-          <Image src={product.image} alt={product.name} width={640} height={640} layout={'responsive'}/>
+          <Image
+            src={product.image}
+            alt={product.name}
+            width={640}
+            height={640}
+            layout={'responsive'}
+          />
         </Grid>
         <Grid item md={3} xs={12}>
           <List>
@@ -50,14 +72,10 @@ export default function ProductScreen(props: ProductScreenProps) {
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography>
-                Category: {product.category}
-              </Typography>
+              <Typography>Category: {product.category}</Typography>
             </ListItem>
             <ListItem>
-              <Typography>
-                Brand: {product.brand}
-              </Typography>
+              <Typography>Brand: {product.brand}</Typography>
             </ListItem>
             <ListItem>
               <Typography>
@@ -88,12 +106,19 @@ export default function ProductScreen(props: ProductScreenProps) {
                     <Typography>Status</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography>{product.countInStock > 0 ? 'In stock' : 'Unavailable'}</Typography>
+                    <Typography>
+                      {product.countInStock > 0 ? 'In stock' : 'Unavailable'}
+                    </Typography>
                   </Grid>
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button onClick={addToCartHandler} fullWidth variant={'contained'} color={'primary'}>
+                <Button
+                  onClick={addToCartHandler}
+                  fullWidth
+                  variant={'contained'}
+                  color={'primary'}
+                >
                   Add to cart
                 </Button>
               </ListItem>
@@ -105,16 +130,18 @@ export default function ProductScreen(props: ProductScreenProps) {
   );
 }
 
+export default dynamic(() => Promise.resolve(ProductScreen), { ssr: false });
+
 export async function getServerSideProps(context: any) {
-  const {params} = context;
-  const {slug} = params;
+  const { params } = context;
+  const { slug } = params;
   await db.connect();
-  const product: IProduct = await Product.findOne({slug}).lean();
+  const product: IProduct = await Product.findOne({ slug }).lean();
   await db.disconnected();
 
   return {
     props: {
-      product: db.convertDocToObj(product)
-    }
+      product: db.convertDocToObj(product),
+    },
   };
 }

@@ -1,29 +1,42 @@
-import type {NextPage} from 'next';
-import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography} from '@material-ui/core';
+import type { NextPage } from 'next';
+import dynamic from 'next/dynamic';
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import NextLink from 'next/link';
 
 import Layout from '../components/Layout';
 import db from '../utils/db';
 import Product from '../model/Product';
-import {IProduct} from '../interfaces/IProduct';
+import { IProduct } from '../interfaces/IProduct';
 
 interface IProducts {
   products: IProduct[];
 }
 
-const Home: NextPage<IProducts> = ({products}) => {
+const Home: NextPage<IProducts> = ({ products }) => {
   return (
     <Layout>
       <div>
         <h1>Products</h1>
         <Grid container spacing={3}>
           {products.map((product: IProduct) => (
-            <Grid item md={4} key={product.slug}>
+            <Grid item md={4} key={product._id}>
               <Card>
                 <NextLink href={`/product/${product.slug}`} passHref>
                   <CardActionArea>
-                    <CardMedia component={'img'} image={product.image} title={product.name}>
-                    </CardMedia>
+                    <CardMedia
+                      component={'img'}
+                      image={product.image}
+                      title={product.name}
+                    />
                     <CardContent>
                       <Typography>{product.name}</Typography>
                     </CardContent>
@@ -43,7 +56,8 @@ const Home: NextPage<IProducts> = ({products}) => {
     </Layout>
   );
 };
-export default Home;
+// export default Home;
+export default dynamic(() => Promise.resolve(Home), { ssr: false });
 
 export async function getServerSideProps() {
   await db.connect();
@@ -52,7 +66,7 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      products: products.map(db.convertDocToObj)
-    }
+      products: products.map(db.convertDocToObj),
+    },
   };
 }
