@@ -1,19 +1,34 @@
-import {IProduct} from '../interfaces/IProduct';
+import { hashSync } from 'bcryptjs';
+
+import { IProduct } from '../interfaces/IProduct';
+import { IUser } from '../interfaces/IUser';
 
 interface IData {
+  users: IUser[];
   products: IProduct[];
 }
 
 const data: IData = {
+  users: [
+    {
+      name: 'Paulo Roberto',
+      email: 'prmorais1302@gmail.com',
+      password: hashSync('P@ulo1313'),
+      isAdmin: true,
+    },
+    {
+      name: 'Maria Fernanda',
+      email: 'nanda04@gmail.com',
+      password: hashSync('N@nda04'),
+      isAdmin: true,
+    },
+  ],
   products: [
     {
       name: 'Free Shirt',
       slug: 'free-shirt',
       category: 'Shirts',
-      //image: '/images/img_01.jpg',
       image: '/images/shirt1.jpg',
-      // isFeatured: true,
-      // featuredImage: '/images/banner1.jpg',
       price: 70,
       brand: 'Nike',
       rating: 4.5,
@@ -25,10 +40,7 @@ const data: IData = {
       name: 'Fit Shirt',
       slug: 'fit-shirt',
       category: 'Shirts',
-      //image: '/images/img_02.jpg',
       image: '/images/shirt2.jpg',
-      // isFeatured: true,
-      // featuredImage: '/images/banner2.jpg',
       price: 80,
       brand: 'Adidas',
       rating: 4.2,
@@ -41,7 +53,6 @@ const data: IData = {
       slug: 'slim-shirt',
       category: 'Shirts',
       image: '/images/shirt3.jpg',
-      // image: '/images/img_03.jpg',
       price: 90,
       brand: 'Raymond',
       rating: 4.5,
@@ -54,7 +65,6 @@ const data: IData = {
       slug: 'golf-pants',
       category: 'Pants',
       image: '/images/pants1.jpg',
-      //image: '/images/img_04.jpg',
       price: 90,
       brand: 'Oliver',
       rating: 4.5,
@@ -67,7 +77,6 @@ const data: IData = {
       slug: 'fit-pants',
       category: 'Pants',
       image: '/images/pants2.jpg',
-      // image: '/images/img_05.jpg',
       price: 95,
       brand: 'Zara',
       rating: 4.5,
@@ -80,7 +89,6 @@ const data: IData = {
       slug: 'classic-pants',
       category: 'Pants',
       image: '/images/pants3.jpg',
-      // image: '/images/img_06.jpg',
       price: 75,
       brand: 'Casely',
       rating: 4.5,
