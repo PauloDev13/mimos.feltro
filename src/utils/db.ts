@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
-import {IProduct} from '../interfaces/IProduct';
+import { IProduct } from '../interfaces/IProduct';
 
 type connectedType = {
-  isConnected: number | boolean
-}
+  isConnected: number | boolean;
+};
 
 const connection: connectedType = {
-  isConnected: 0
+  isConnected: 0,
 };
 
 const connect = async () => {
@@ -24,10 +24,10 @@ const connect = async () => {
     await mongoose.disconnect();
   }
 
-  const db = await mongoose.connect(process.env.NEXT_PUBLIC_MONGODB_URI || '', {
+  const db = await mongoose.connect(process.env.MONGODB_URI || '', {
     useCreateIndex: true,
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
   });
   console.log('New connection');
   connection.isConnected = db.connections[0].readyState;
@@ -51,5 +51,5 @@ function convertDocToObj(doc?: any): IProduct {
   return doc;
 }
 
-const db = {connect, disconnected, convertDocToObj};
+const db = { connect, disconnected, convertDocToObj };
 export default db;

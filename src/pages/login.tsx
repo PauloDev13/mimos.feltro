@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Layout from '../components/Layout';
 import {
   Button,
@@ -11,12 +12,30 @@ import NextLink from 'next/link';
 import dynamic from 'next/dynamic';
 
 import useStyles from '../utils/styles';
+import React, { useState } from 'react';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const submitHandler = async (e: any) => {
+    e.preventDefault();
+    await axios.post('/api/users/login', {email, password})
+    .then(() => {
+      return alert('Login realizado com sucesso.');
+    }).catch(err => alert(err.response.data ? err.response.data.message : err.message));
+    // try {
+    //   const {data} = await axios.post('/api/users/login', {email, password});
+    //   alert('Login realizado com sucesso.');
+    // } catch (err) {
+    //   alert(err);
+    // }
+  };
+
   const classes = useStyles();
   return (
     <Layout title={'Login'}>
-      <form className={classes.form}>
+      <form onSubmit={submitHandler} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
           Login
         </Typography>
@@ -27,7 +46,8 @@ const Login = () => {
               fullWidth
               id={'email'}
               label={'Email'}
-              inputProps={{ type: 'email' }}
+              inputProps={{type: 'email'}}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             />
           </ListItem>
           <ListItem>
@@ -36,7 +56,8 @@ const Login = () => {
               fullWidth
               id={'password'}
               label={'Password'}
-              inputProps={{ type: 'password' }}
+              inputProps={{type: 'password'}}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             />
           </ListItem>
           <ListItem>
@@ -61,4 +82,4 @@ const Login = () => {
   );
 };
 //export default Login;
-export default dynamic(() => Promise.resolve(Login), { ssr: false });
+export default dynamic(() => Promise.resolve(Login), {ssr: false});
