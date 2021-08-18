@@ -27,15 +27,15 @@ const Login = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
-  } = useForm();
+    formState: {errors},
+  } = useForm<IFormValues>();
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
-  const { state, dispatch } = useContext(Store);
-  const { redirect }: any = router.query;
+  const {state, dispatch} = useContext(Store);
+  const {redirect}: any = router.query;
 
-  const { userInfo } = state;
+  const {userInfo} = state;
 
   useEffect(() => {
     if (userInfo) {
@@ -46,17 +46,19 @@ const Login = () => {
   // const [email, setEmail] = useState('');
   // const [password, setPassword] = useState('');
 
-  const submitHandler = async ({ email, password }: IFormValues) => {
+  const submitHandler = async ({email, password}: IFormValues) => {
     closeSnackbar();
     // e.preventDefault();
     try {
-      const { data } = await axios.post('/api/users/login', {
+      const {data} = await axios.post('/api/users/login', {
         email,
         password,
       });
-      dispatch({ type: 'USER_LOGIN', payload: data });
-      Cookies.set('userInfo', data);
+
+      dispatch({type: 'USER_LOGIN', payload: data});
+      Cookies.set('userInfo', JSON.stringify(data));
       await router.push(redirect || '/');
+      
     } catch (err) {
       enqueueSnackbar(
         err.response.data ? err.response.data.message : err.message,
@@ -84,13 +86,13 @@ const Login = () => {
                 required: true,
                 pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'email'}
                   label={'Email'}
-                  inputProps={{ type: 'email' }}
+                  inputProps={{type: 'email'}}
                   error={Boolean(errors.email)}
                   helperText={
                     errors.email
@@ -113,13 +115,13 @@ const Login = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'password'}
                   label={'Senha'}
-                  inputProps={{ type: 'password' }}
+                  inputProps={{type: 'password'}}
                   error={Boolean(errors.password)}
                   helperText={
                     errors.password

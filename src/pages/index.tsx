@@ -1,4 +1,7 @@
+import { useContext } from 'react';
+import axios from 'axios';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 //import dynamic from 'next/dynamic';
 import {
   Button,
@@ -16,9 +19,6 @@ import Layout from '../components/Layout';
 import db from '../utils/db';
 import Product from '../model/Product';
 import { IProduct } from '../interfaces/IProduct';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useContext } from 'react';
 import { Store } from '../utils/Store';
 
 interface IProducts {

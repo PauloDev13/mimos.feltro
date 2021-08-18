@@ -82,7 +82,8 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     setAnchorEl(null);
     dispatch({ type: 'USER_LOGOUT' });
     Cookies.remove('userInfo');
-    Cookies.remove('cartItem');
+    Cookies.remove('cartItems');
+    Cookies.remove('shippingAddress');
     router.push('/');
   };
   // @ts-ignore
@@ -120,7 +121,7 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                   )}
                 </Link>
               </NextLink>
-              {userInfo ? (
+              {userInfo?.name ? (
                 <>
                   <Button
                     className={classes.navbarButton}

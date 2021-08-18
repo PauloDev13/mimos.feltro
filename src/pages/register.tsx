@@ -26,7 +26,7 @@ const Register = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<IFormValues>();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
