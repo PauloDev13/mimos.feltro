@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import NextLink from 'next/link';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import axios from 'axios';
 
 import {
@@ -29,24 +29,26 @@ import Layout from '../components/Layout';
 import { IProduct } from '../interfaces/IProduct';
 
 const CartScreen = () => {
+  const router: any = useRouter();
   const classes = useStyles();
-  const { state, dispatch } = useContext(Store);
+
+  const {state, dispatch} = useContext(Store);
   const {
-    cart: { cartItems },
+    cart: {cartItems},
   } = state;
   // const {cartItems} = state.cart
 
   const updateCartHandler = async (item: IProduct, quantity: Number) => {
-    const { data } = await axios.get(`/api/product/${item._id}`);
+    const {data} = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
       window.alert('Desculpe. Esse produto está fora de estoque!');
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+    dispatch({type: 'CART_ADD_ITEM', payload: {...item, quantity}});
   };
 
   const removeItemHandler = async (item: IProduct) => {
-    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+    dispatch({type: 'CART_REMOVE_ITEM', payload: item});
   };
 
   const checkoutHandler = async () => {
@@ -164,4 +166,5 @@ const CartScreen = () => {
     </Layout>
   );
 };
-export default dynamic(() => Promise.resolve(CartScreen), {ssr: false});
+export default CartScreen;
+// export default dynamic(() => Promise.resolve(CartScreen), {ssr: false});

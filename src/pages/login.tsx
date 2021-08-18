@@ -1,4 +1,10 @@
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import NextLink from 'next/link';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+
 import Layout from '../components/Layout';
 import {
   Button,
@@ -8,28 +14,39 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import NextLink from 'next/link';
-import dynamic from 'next/dynamic';
 
 import useStyles from '../utils/styles';
-import React, { useState } from 'react';
+import { Store } from '../utils/Store';
 
 const Login = () => {
+  const router: any = useRouter();
+  const { state, dispatch } = useContext(Store);
+  const { redirect }: any = router.query;
+
+  const { userInfo } = state;
+
+  useEffect(() => {
+    if (userInfo) {
+      router.push('/').then();
+    }
+  }, [router, userInfo]);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
-    await axios.post('/api/users/login', {email, password})
-    .then(() => {
-      return alert('Login realizado com sucesso.');
-    }).catch(err => alert(err.response.data ? err.response.data.message : err.message));
-    // try {
-    //   const {data} = await axios.post('/api/users/login', {email, password});
-    //   alert('Login realizado com sucesso.');
-    // } catch (err) {
-    //   alert(err);
-    // }
+    try {
+      const { data } = await axios.post('/api/users/login', {
+        email,
+        password,
+      });
+      dispatch({ type: 'USER_LOGIN', payload: data });
+      Cookies.set('userInfo', data);
+      await router.push(redirect || '/');
+    } catch (err) {
+      alert(err.response.data ? err.response.data.message : err.message);
+    }
   };
 
   const classes = useStyles();
@@ -46,8 +63,10 @@ const Login = () => {
               fullWidth
               id={'email'}
               label={'Email'}
-              inputProps={{type: 'email'}}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              inputProps={{ type: 'email' }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
             />
           </ListItem>
           <ListItem>
@@ -56,8 +75,10 @@ const Login = () => {
               fullWidth
               id={'password'}
               label={'Password'}
-              inputProps={{type: 'password'}}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+              inputProps={{ type: 'password' }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
             />
           </ListItem>
           <ListItem>

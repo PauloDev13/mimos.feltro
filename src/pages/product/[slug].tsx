@@ -1,4 +1,5 @@
-import router from 'next/router';
+// import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
@@ -20,15 +21,15 @@ import Product from '../../model/Product';
 import Layout from '../../components/Layout';
 import { useContext } from 'react';
 import { Store } from '../../utils/Store';
-import dynamic from 'next/dynamic';
 
 interface ProductScreenProps {
   product: IProduct;
 }
 
 function ProductScreen(props: ProductScreenProps) {
-  const { state, dispatch } = useContext(Store);
-  const { product } = props;
+  const router: any = useRouter();
+  const {state, dispatch} = useContext(Store);
+  const {product} = props;
   const classes = useStyles();
 
   if (!product) {
@@ -39,15 +40,15 @@ function ProductScreen(props: ProductScreenProps) {
     const existItem = state.cart.cartItems.find(
       (item: IProduct) => item._id === product._id,
     );
-    const quantity = existItem ? existItem.quantity! + 1 : 1;
+    const quantity = existItem ? (existItem.quantity as number) + 1 : 1;
 
-    const { data } = await axios.get(`/api/product/${product._id}`);
+    const {data} = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
       window.alert('Desculpe. Esse produto está fora de estoque!');
       return;
     }
 
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+    dispatch({type: 'CART_ADD_ITEM', payload: {...product, quantity}});
     await router.push('/cart');
   };
 
@@ -136,13 +137,15 @@ function ProductScreen(props: ProductScreenProps) {
   );
 }
 
-export default dynamic(() => Promise.resolve(ProductScreen), { ssr: false });
+export default ProductScreen;
+
+//export default dynamic(() => Promise.resolve(ProductScreen), { ssr: false });
 
 export async function getServerSideProps(context: any) {
-  const { params } = context;
-  const { slug } = params;
+  const {params} = context;
+  const {slug} = params;
   await db.connect();
-  const product: IProduct = await Product.findOne({ slug }).lean();
+  const product: IProduct = await Product.findOne({slug}).lean();
   await db.disconnected();
 
   return {

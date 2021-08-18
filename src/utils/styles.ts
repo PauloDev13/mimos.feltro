@@ -30,6 +30,10 @@ const useStyles = makeStyles({
     maxWidth: 800,
     margin: '0 auto',
   },
+  navbarButton: {
+    color: '#ffffff',
+    textTransform: 'initial',
+  },
   divLink: {
     fontSize: '1.2rem',
   },

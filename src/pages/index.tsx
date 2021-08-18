@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import dynamic from 'next/dynamic';
+//import dynamic from 'next/dynamic';
 import {
   Button,
   Card,
@@ -17,7 +17,7 @@ import db from '../utils/db';
 import Product from '../model/Product';
 import { IProduct } from '../interfaces/IProduct';
 import axios from 'axios';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { Store } from '../utils/Store';
 
@@ -26,6 +26,7 @@ interface IProducts {
 }
 
 const Home: NextPage<IProducts> = ({ products }) => {
+  const router: any = useRouter();
   const { state, dispatch } = useContext(Store);
 
   const addToCartHandler = async (product: IProduct) => {
@@ -81,8 +82,9 @@ const Home: NextPage<IProducts> = ({ products }) => {
     </Layout>
   );
 };
-// export default Home;
-export default dynamic(() => Promise.resolve(Home), { ssr: false });
+export default Home;
+
+// export default dynamic(() => Promise.resolve(Home), { ssr: false });
 
 export async function getServerSideProps() {
   await db.connect();
