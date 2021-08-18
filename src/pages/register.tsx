@@ -18,11 +18,11 @@ import {
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 
-const Login = () => {
+const Register = () => {
   const router: any = useRouter();
-  const { state, dispatch } = useContext(Store);
   const { redirect }: any = router.query;
 
+  const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
 
   useEffect(() => {
@@ -31,16 +31,25 @@ const Login = () => {
     }
   }, [router, userInfo]);
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert('Senhas não conferem!');
+      return;
+    }
+
     try {
-      const { data } = await axios.post('/api/users/login', {
+      const { data } = await axios.post('/api/users/register', {
+        name,
         email,
         password,
       });
+
       dispatch({ type: 'USER_LOGIN', payload: data });
       Cookies.set('userInfo', data);
       await router.push(redirect || '/');
@@ -51,12 +60,25 @@ const Login = () => {
 
   const classes = useStyles();
   return (
-    <Layout title={'Login'}>
+    <Layout title={'Register'}>
       <form onSubmit={submitHandler} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
-          Login
+          Register
         </Typography>
         <List>
+          <ListItem>
+            <TextField
+              variant={'outlined'}
+              fullWidth
+              id={'name'}
+              label={'Name'}
+              inputProps={{ type: 'text' }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
+            />
+          </ListItem>
+
           <ListItem>
             <TextField
               variant={'outlined'}
@@ -69,6 +91,7 @@ const Login = () => {
               }
             />
           </ListItem>
+
           <ListItem>
             <TextField
               variant={'outlined'}
@@ -82,19 +105,31 @@ const Login = () => {
             />
           </ListItem>
           <ListItem>
+            <TextField
+              variant={'outlined'}
+              fullWidth
+              id={'confirmPassword'}
+              label={'Confirm Password'}
+              inputProps={{ type: 'password' }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setConfirmPassword(e.target.value)
+              }
+            />
+          </ListItem>
+          <ListItem>
             <Button
               variant={'contained'}
               type={'submit'}
               fullWidth
               color={'primary'}
             >
-              Login
+              Register
             </Button>
           </ListItem>
           <ListItem>
-            Ainda não é cadastrado? &nbsp;
-            <NextLink href={`/register?redirect=${redirect || '/'}`} passHref>
-              <Link>Faça seu cadastro aqui</Link>
+            Já possui cadastro? &nbsp;
+            <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
+              <Link>Faça login</Link>
             </NextLink>
           </ListItem>
         </List>
@@ -102,5 +137,5 @@ const Login = () => {
     </Layout>
   );
 };
-export default Login;
+export default Register;
 // export default dynamic(() => Promise.resolve(Login), {ssr: false});

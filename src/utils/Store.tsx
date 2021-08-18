@@ -1,6 +1,7 @@
 import { createContext, useReducer } from 'react';
 import { NextPage } from 'next';
 import Cookies from 'js-cookie';
+
 import { IProduct } from '../interfaces/IProduct';
 
 interface StateProps {
@@ -35,7 +36,7 @@ interface ContextProps {
 
 export const Store = createContext<ContextProps>({
   state: initialState,
-  dispatch: function () {},
+  dispatch: () => {},
 });
 
 const reducer = (state: StateProps, action: ActionProps): StateProps => {

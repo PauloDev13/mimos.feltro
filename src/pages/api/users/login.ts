@@ -9,12 +9,18 @@ import signToken from '../../../utils/auth';
 const handler = nc();
 
 handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
+  // abre a conexão com database mongodb
   await db.connect();
+  // busca usuário no database mongodb com o email informado
   const user = await User.findOne({ email: req.body.email });
+  // fecha a conexão com database mongodb
   await db.disconnected();
 
+  // se existir o usuário informado, compara a senhas
   if (user && compareSync(req.body.password, user.password)) {
+    // cria o token com todos os dados do usuário
     const token = signToken(user);
+    // envia a resposta com o token e os dados do usuário
     res.send({
       token,
       _id: user._id,
@@ -23,6 +29,7 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
       isAdmin: user.isAdmin,
     });
   } else {
+    // se não existir o usuário informado ou a senha não for validada, envia mensagem
     res.status(401).send({ message: 'Usuário e/ou Senha inválido!' });
   }
 });
