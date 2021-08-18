@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
+import { SnackbarProvider } from 'notistack';
 
 import { StoreProvider } from '../utils/Store';
 
@@ -11,9 +12,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, []);
   return (
-    <StoreProvider>
-      <Component {...pageProps} />
-    </StoreProvider>
+    <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <StoreProvider>
+        <Component {...pageProps} />
+      </StoreProvider>
+    </SnackbarProvider>
   );
 }
 
