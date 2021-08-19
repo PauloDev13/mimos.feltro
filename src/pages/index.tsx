@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import axios from 'axios';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 //import dynamic from 'next/dynamic';
 import {
   Button,
@@ -13,7 +14,8 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import NextLink from 'next/link';
+import { useSnackbar } from 'notistack';
+import action from '../components/ActionSnackbar';
 
 import Layout from '../components/Layout';
 import db from '../utils/db';
@@ -26,6 +28,7 @@ interface IProducts {
 }
 
 const Home: NextPage<IProducts> = ({ products }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const router: any = useRouter();
   const { state, dispatch } = useContext(Store);
 
@@ -37,7 +40,11 @@ const Home: NextPage<IProducts> = ({ products }) => {
 
     const { data } = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
-      window.alert('Desculpe. Esse produto está fora de estoque!');
+      // window.alert('Desculpe. Esse produto está fora de estoque!');
+      enqueueSnackbar('Desculpe. Produto sem estoque!', {
+        variant: 'error',
+        action,
+      });
       return;
     }
 

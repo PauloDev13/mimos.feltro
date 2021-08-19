@@ -13,6 +13,8 @@ import {
   ListItem,
   Typography,
 } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import action from '../../components/ActionSnackbar';
 
 import useStyles from '../../utils/styles';
 import db from '../../utils/db';
@@ -22,11 +24,13 @@ import Layout from '../../components/Layout';
 import { useContext } from 'react';
 import { Store } from '../../utils/Store';
 
+
 interface ProductScreenProps {
   product: IProduct;
 }
 
 function ProductScreen(props: ProductScreenProps) {
+  const {enqueueSnackbar} = useSnackbar();
   const router: any = useRouter();
   const {state, dispatch} = useContext(Store);
   const {product} = props;
@@ -44,7 +48,11 @@ function ProductScreen(props: ProductScreenProps) {
 
     const {data} = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
-      window.alert('Desculpe. Esse produto está fora de estoque!');
+      // window.alert('Desculpe. Esse produto está fora de estoque!');
+      enqueueSnackbar('Desculpe. Produto sem estoque!', {
+        variant: 'error',
+        action
+      });
       return;
     }
 

@@ -5,6 +5,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import action from '../components/ActionSnackbar';
 import Cookies from 'js-cookie';
 
 import Layout from '../components/Layout';
@@ -27,43 +28,39 @@ const Login = () => {
   const {
     handleSubmit,
     control,
-    formState: {errors},
+    formState: { errors },
   } = useForm<IFormValues>();
 
-  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const {state, dispatch} = useContext(Store);
-  const {redirect}: any = router.query;
+  const { state, dispatch } = useContext(Store);
+  const { redirect } = router.query;
 
-  const {userInfo} = state;
+  const { userInfo } = state;
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/').then();
+      router.push('/');
     }
   }, [router, userInfo]);
 
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-
-  const submitHandler = async ({email, password}: IFormValues) => {
-    closeSnackbar();
-    // e.preventDefault();
+  const submitHandler = async ({ email, password }: IFormValues) => {
     try {
-      const {data} = await axios.post('/api/users/login', {
+      const { data } = await axios.post('/api/users/login', {
         email,
         password,
       });
 
-      dispatch({type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'USER_LOGIN', payload: data });
       Cookies.set('userInfo', JSON.stringify(data));
+
       await router.push(redirect || '/');
-      
     } catch (err) {
       enqueueSnackbar(
         err.response.data ? err.response.data.message : err.message,
         {
           variant: 'error',
+          action,
         },
       );
     }
@@ -86,13 +83,13 @@ const Login = () => {
                 required: true,
                 pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'email'}
                   label={'Email'}
-                  inputProps={{type: 'email'}}
+                  inputProps={{ type: 'email' }}
                   error={Boolean(errors.email)}
                   helperText={
                     errors.email
@@ -115,13 +112,13 @@ const Login = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'password'}
                   label={'Senha'}
-                  inputProps={{type: 'password'}}
+                  inputProps={{ type: 'password' }}
                   error={Boolean(errors.password)}
                   helperText={
                     errors.password

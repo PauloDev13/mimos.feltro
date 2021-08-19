@@ -5,6 +5,7 @@ import NextLink from 'next/link';
 // import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
+import action from '../components/ActionSnackbar';
 import Cookies from 'js-cookie';
 
 import Layout from '../components/Layout';
@@ -28,24 +29,19 @@ const Register = () => {
     formState: { errors },
   } = useForm<IFormValues>();
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const router: any = useRouter();
-  const { redirect }: any = router.query;
+  const { redirect } = router.query;
 
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/').then();
+      router.push('/');
     }
   }, [router, userInfo]);
-
-  // const [name, setName] = useState('');
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-  // const [confirmPassword, setConfirmPassword] = useState('');
 
   const submitHandler = async ({
     name,
@@ -53,11 +49,10 @@ const Register = () => {
     password,
     confirmPassword,
   }: IFormValues) => {
-    closeSnackbar();
-    // e.preventDefault();
     if (password !== confirmPassword) {
       enqueueSnackbar('Senhas não conferem!', {
         variant: 'error',
+        action,
       });
       return;
     }
@@ -70,7 +65,8 @@ const Register = () => {
       });
 
       dispatch({ type: 'USER_LOGIN', payload: data });
-      Cookies.set('userInfo', data);
+      Cookies.set('userInfo', JSON.stringify(data));
+
       await router.push(redirect || '/');
     } catch (err) {
       enqueueSnackbar(

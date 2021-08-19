@@ -21,18 +21,18 @@ import CheckoutWizard from '../components/CheckoutWizard';
 const Shipping = () => {
   const router: any = useRouter();
   const classes = useStyles();
-  const {state, dispatch} = useContext(Store);
+  const { state, dispatch } = useContext(Store);
 
   const {
     handleSubmit,
     control,
-    formState: {errors},
+    formState: { errors },
     setValue,
   } = useForm<IFormShippingValues>();
 
   const {
     userInfo,
-    cart: {shippingAddress},
+    cart: { shippingAddress },
   } = state;
 
   useEffect(() => {
@@ -47,6 +47,7 @@ const Shipping = () => {
   }, [
     router,
     setValue,
+    shippingAddress,
     shippingAddress.address,
     shippingAddress.city,
     shippingAddress.country,
@@ -56,13 +57,12 @@ const Shipping = () => {
   ]);
 
   const submitHandler = ({
-                           fullName,
-                           address,
-                           city,
-                           postalCode,
-                           country,
-                         }: IFormShippingValues) => {
-
+    fullName,
+    address,
+    city,
+    postalCode,
+    country,
+  }: IFormShippingValues) => {
     const data: IFormShippingValues = {
       fullName,
       address,
@@ -75,14 +75,14 @@ const Shipping = () => {
       type: 'SAVE_SHIPPING_ADDRESS',
       payload: data,
     });
-    
+
     Cookies.set('shippingAddress', JSON.stringify(data));
     router.push('/payment');
   };
 
   return (
     <Layout title={'Endereço para envio'}>
-      <CheckoutWizard activeStep={1}/>
+      <CheckoutWizard activeStep={1} />
       <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
           Endereço para envio
@@ -97,13 +97,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'fullName'}
                   label={'Nome Completo'}
-                  inputProps={{type: 'text'}}
+                  inputProps={{ type: 'text' }}
                   error={Boolean(errors.fullName)}
                   helperText={
                     errors.fullName
@@ -127,13 +127,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'address'}
                   label={'Endereço'}
-                  inputProps={{type: 'text'}}
+                  inputProps={{ type: 'text' }}
                   error={Boolean(errors.address)}
                   helperText={
                     errors.address
@@ -157,13 +157,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'city'}
                   label={'Cidade'}
-                  inputProps={{type: 'text'}}
+                  inputProps={{ type: 'text' }}
                   error={Boolean(errors.city)}
                   helperText={
                     errors.city
@@ -187,13 +187,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'postalCode'}
                   label={'CEP'}
-                  inputProps={{type: 'text'}}
+                  inputProps={{ type: 'text' }}
                   error={Boolean(errors.postalCode)}
                   helperText={
                     errors.postalCode
@@ -217,13 +217,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({field}) => (
+              render={({ field }) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'country'}
                   label={'Estado'}
-                  inputProps={{type: 'text'}}
+                  inputProps={{ type: 'text' }}
                   error={Boolean(errors.country)}
                   helperText={
                     errors.country
@@ -245,7 +245,7 @@ const Shipping = () => {
               fullWidth
               color={'primary'}
             >
-              Continue
+              Continuar
             </Button>
           </ListItem>
         </List>

@@ -34,6 +34,9 @@ const useStyles = makeStyles({
     color: '#ffffff',
     textTransform: 'initial',
   },
+  transparentBackground: {
+    backgroundColor: 'transparent',
+  },
   divLink: {
     fontSize: '1.2rem',
   },

@@ -8,16 +8,18 @@ import { IUser } from '../interfaces/IUser';
 
 interface StateProps {
   darkMode: boolean;
-  userInfo: IUser;
+  userInfo: IUser | null;
   cart: {
     cartItems: IProduct[];
     shippingAddress: IFormShippingValues;
+    paymentMethod: string;
   };
+  product?: IProduct;
 }
 
 interface ActionProps {
   type: string;
-  payload: any;
+  payload?: any;
 }
 
 const initialState: StateProps = {
@@ -29,6 +31,9 @@ const initialState: StateProps = {
     shippingAddress: Cookies.get('shippingAddress')
       ? JSON.parse(Cookies.get('shippingAddress') as string)
       : {},
+    paymentMethod: Cookies.get('paymentMethod')
+      ? (Cookies.get('paymentMethod') as string)
+      : '',
   },
   userInfo: Cookies.get('userInfo')
     ? JSON.parse(Cookies.get('userInfo') as string)
@@ -58,7 +63,7 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
         (item) => item._id === newItem._id,
       );
 
-      const cartItems: IProduct[] = existItem
+      const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
             item.name === existItem.name ? newItem : item,
           )
@@ -82,18 +87,19 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
         cart: { ...state.cart, shippingAddress: action.payload },
       };
     }
+    case 'SAVE_PAYMENT_METHOD': {
+      return {
+        ...state,
+        cart: { ...state.cart, paymentMethod: action.payload },
+      };
+    }
     case 'USER_LOGIN': {
       return { ...state, userInfo: action.payload };
     }
     case 'USER_LOGOUT': {
       return {
         ...state,
-        userInfo: {
-          name: '',
-          email: '',
-          password: '',
-          isAdmin: false,
-        },
+        userInfo: null,
         cart: {
           cartItems: [],
           shippingAddress: {
@@ -103,6 +109,7 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
             postalCode: '',
             country: '',
           },
+          paymentMethod: '',
         },
       };
     }

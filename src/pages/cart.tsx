@@ -32,23 +32,23 @@ const CartScreen = () => {
   const router: any = useRouter();
   const classes = useStyles();
 
-  const {state, dispatch} = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const {
-    cart: {cartItems},
+    cart: { cartItems },
   } = state;
   // const {cartItems} = state.cart
 
   const updateCartHandler = async (item: IProduct, quantity: Number) => {
-    const {data} = await axios.get(`/api/products/${item._id}`);
+    const { data } = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
       window.alert('Desculpe. Esse produto está fora de estoque!');
       return;
     }
-    dispatch({type: 'CART_ADD_ITEM', payload: {...item, quantity}});
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
   };
 
   const removeItemHandler = async (item: IProduct) => {
-    dispatch({type: 'CART_REMOVE_ITEM', payload: item});
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
   };
 
   const checkoutHandler = async () => {

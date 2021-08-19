@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { SnackbarProvider } from 'notistack';
 
 import { StoreProvider } from '../utils/Store';
+import Grow from '@material-ui/core/Grow';
 
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -12,7 +13,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, []);
   return (
-    <SnackbarProvider anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+    <SnackbarProvider
+      // @ts-ignore
+      TransitionComponent={Grow}
+      autoHideDuration={3000}
+      preventDuplicate
+      dense={false}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
       <StoreProvider>
         <Component {...pageProps} />
       </StoreProvider>
