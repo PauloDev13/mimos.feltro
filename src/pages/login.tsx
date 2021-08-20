@@ -1,14 +1,13 @@
 import React, { useContext, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import NextLink from 'next/link';
 // import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { Controller, useForm } from 'react-hook-form';
+
 import { useSnackbar } from 'notistack';
-import action from '../components/ActionSnackbar';
 import Cookies from 'js-cookie';
 
-import Layout from '../components/Layout';
 import {
   Button,
   Link,
@@ -20,7 +19,11 @@ import {
 
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
+import { getError } from '../utils/error';
 import { IFormValues } from '../interfaces/IFormValues';
+
+import Layout from '../components/Layout';
+import action from '../components/ActionSnackbar';
 
 const Login = () => {
   const router: any = useRouter();
@@ -56,13 +59,10 @@ const Login = () => {
 
       await router.push(redirect || '/');
     } catch (err) {
-      enqueueSnackbar(
-        err.response.data ? err.response.data.message : err.message,
-        {
-          variant: 'error',
-          action,
-        },
-      );
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action,
+      });
     }
   };
 
@@ -71,7 +71,7 @@ const Login = () => {
     <Layout title={'Login'}>
       <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
-          Login
+          Acesso ao Sistema
         </Typography>
         <List>
           <ListItem>
@@ -139,7 +139,7 @@ const Login = () => {
               fullWidth
               color={'primary'}
             >
-              Login
+              Entrar
             </Button>
           </ListItem>
           <ListItem>

@@ -52,10 +52,10 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
-        main: darkMode ? '#f0c000' : '#082578',
+        main: darkMode ? '#d980d5' : '#8c0786',
       },
       secondary: {
-        main: darkMode ? '#208080' : '#043a3a',
+        main: darkMode ? '#d980d5' : '#8c0786',
       },
     },
   });
@@ -90,7 +90,9 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
   return (
     <div>
       <Head>
-        <title>{title ? `${title} - Next Amazona` : 'Next Amazona'}</title>
+        <title>
+          {title ? `${title} - Next Mimos Feltro` : 'Next  Mimos Feltro'}
+        </title>
         {description && (
           <meta name={'description'} content={description}></meta>
         )}
@@ -101,7 +103,7 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
           <Toolbar>
             <NextLink href={'/'} passHref>
               <Link>
-                <Typography className={classes.brand}>amazonas</Typography>
+                <Typography className={classes.brand}>Mimos Feltro</Typography>
               </Link>
             </NextLink>
             <div className={classes.grow}></div>
@@ -114,10 +116,10 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                       color={'secondary'}
                       badgeContent={cart.cartItems.length}
                     >
-                      Cart
+                      Seu Carrinho
                     </Badge>
                   ) : (
-                    'Cart'
+                    'Seu Carrinho'
                   )}
                 </Link>
               </NextLink>
@@ -138,16 +140,16 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                     open={Boolean(anchorEl)}
                     onClose={loginMenuCloseHandler}
                   >
-                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
+                    <MenuItem onClick={loginMenuCloseHandler}>Perfil</MenuItem>
                     <MenuItem onClick={loginMenuCloseHandler}>
-                      My account
+                      Minha Conta
                     </MenuItem>
-                    <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
+                    <MenuItem onClick={logoutClickHandler}>Sair</MenuItem>
                   </Menu>
                 </>
               ) : (
                 <NextLink href={'/login'} passHref>
-                  <Link>Login</Link>
+                  <Link>Entrar</Link>
                 </NextLink>
               )}
             </div>
@@ -157,7 +159,9 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
           {children as React.ReactFragment}
         </Container>
         <footer className={classes.footer}>
-          <Typography>All rights reserved. Next Amazona</Typography>
+          <Typography>
+            Todos os direitos reservados. Next Mimos Feltro
+          </Typography>
         </footer>
       </ThemeProvider>
     </div>

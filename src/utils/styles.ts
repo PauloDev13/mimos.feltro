@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
   navbar: {
-    backgroundColor: '#203040',
+    backgroundColor: '#11b8a1',
     '& a': {
       color: '#ffffff',
       marginLeft: 10,

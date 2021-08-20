@@ -1,10 +1,11 @@
+// import dynamic from 'next/dynamic';
 import { useContext } from 'react';
+import axios from 'axios';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-// import dynamic from 'next/dynamic';
-import axios from 'axios';
 
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -25,30 +26,37 @@ import {
 
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
-import Layout from '../components/Layout';
 import { IProduct } from '../interfaces/IProduct';
 
+import Layout from '../components/Layout';
+import action from '../components/ActionSnackbar';
+
 const CartScreen = () => {
+  const {enqueueSnackbar} = useSnackbar();
   const router: any = useRouter();
   const classes = useStyles();
 
-  const { state, dispatch } = useContext(Store);
+  const {state, dispatch} = useContext(Store);
   const {
-    cart: { cartItems },
+    cart: {cartItems},
   } = state;
   // const {cartItems} = state.cart
 
   const updateCartHandler = async (item: IProduct, quantity: Number) => {
-    const { data } = await axios.get(`/api/products/${item._id}`);
+    const {data} = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
-      window.alert('Desculpe. Esse produto está fora de estoque!');
+      enqueueSnackbar('Desculpe. Produto sem estoque!', {
+        variant: 'error',
+        action
+      });
+      // window.alert('Desculpe. Esse produto está fora de estoque!');
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+    dispatch({type: 'CART_ADD_ITEM', payload: {...item, quantity}});
   };
 
   const removeItemHandler = async (item: IProduct) => {
-    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+    dispatch({type: 'CART_REMOVE_ITEM', payload: item});
   };
 
   const checkoutHandler = async () => {
@@ -74,11 +82,11 @@ const CartScreen = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Image</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell align={'right'}>Quantity</TableCell>
-                    <TableCell align={'right'}>Price</TableCell>
-                    <TableCell align={'right'}>Action</TableCell>
+                    <TableCell>Imagem</TableCell>
+                    <TableCell>Nome</TableCell>
+                    <TableCell align={'right'}>Quantidade</TableCell>
+                    <TableCell align={'right'}>Preço</TableCell>
+                    <TableCell align={'right'}>Ação</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -120,7 +128,7 @@ const CartScreen = () => {
                         </Select>
                       </TableCell>
 
-                      <TableCell align={'right'}>${item.price}</TableCell>
+                      <TableCell align={'right'}>R$ {item.price}</TableCell>
 
                       <TableCell align={'right'}>
                         <Button
@@ -142,9 +150,9 @@ const CartScreen = () => {
               <List>
                 <ListItem>
                   <Typography variant={'h2'}>
-                    Subtotal ({cartItems.reduce((a, c) => a + c.quantity!, 0)}{' '}
-                    items) : ${' '}
-                    {cartItems.reduce((a, c) => a + c.quantity! * c.price, 0)}
+                    Subtotal ({cartItems.reduce((a, c) => a + Number(c.quantity), 0)} &nbsp;
+                    {cartItems.reduce((a, c) => a + Number(c.quantity), 0) > 1 ? 'itens' : 'item'}):
+                    R$ {cartItems.reduce((a, c) => a + c.quantity! * c.price, 0)}
                   </Typography>
                 </ListItem>
                 <ListItem>
@@ -154,7 +162,7 @@ const CartScreen = () => {
                     color={'primary'}
                     fullWidth
                   >
-                    Check Out
+                    Concluir Pedido
                   </Button>
                 </ListItem>
               </List>

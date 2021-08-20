@@ -4,7 +4,7 @@ import { compareSync } from 'bcryptjs';
 
 import db from '../../../utils/db';
 import User from '../../../model/User';
-import signToken from '../../../utils/auth';
+import { signToken } from '../../../utils/auth';
 
 const handler = nc();
 

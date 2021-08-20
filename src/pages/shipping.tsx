@@ -1,10 +1,8 @@
-import React, { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import React, { useContext, useEffect } from 'react';
 // import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-
-import Layout from '../components/Layout';
 import {
   Button,
   List,
@@ -16,6 +14,8 @@ import {
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import { IFormShippingValues } from '../interfaces/IFormShippingValues';
+
+import Layout from '../components/Layout';
 import CheckoutWizard from '../components/CheckoutWizard';
 
 const Shipping = () => {

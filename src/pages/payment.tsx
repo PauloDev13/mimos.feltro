@@ -1,11 +1,7 @@
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import Cookies from 'js-cookie';
-
-import useStyles from '../utils/styles';
-import { Store } from '../utils/Store';
-import Layout from '../components/Layout';
-import CheckoutWizard from '../components/CheckoutWizard';
 
 import {
   Button,
@@ -17,12 +13,17 @@ import {
   RadioGroup,
   Typography,
 } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
+
+import useStyles from '../utils/styles';
+import { Store } from '../utils/Store';
+
+import Layout from '../components/Layout';
+import CheckoutWizard from '../components/CheckoutWizard';
 import action from '../components/ActionSnackbar';
 
 const Payment = () => {
   const classes = useStyles();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const router: any = useRouter();
 
   const { state, dispatch } = useContext(Store);

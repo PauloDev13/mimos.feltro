@@ -93,6 +93,12 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
         cart: { ...state.cart, paymentMethod: action.payload },
       };
     }
+    case 'CART_CLEAR': {
+      return {
+        ...state,
+        cart: { ...state.cart, cartItems: [] },
+      };
+    }
     case 'USER_LOGIN': {
       return { ...state, userInfo: action.payload };
     }

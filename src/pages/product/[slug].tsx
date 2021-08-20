@@ -1,9 +1,11 @@
 // import dynamic from 'next/dynamic';
+import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -13,17 +15,17 @@ import {
   ListItem,
   Typography,
 } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
+
 import action from '../../components/ActionSnackbar';
 
 import useStyles from '../../utils/styles';
 import db from '../../utils/db';
-import { IProduct } from '../../interfaces/IProduct';
-import Product from '../../model/Product';
-import Layout from '../../components/Layout';
-import { useContext } from 'react';
 import { Store } from '../../utils/Store';
 
+import { IProduct } from '../../interfaces/IProduct';
+import Product from '../../model/Product';
+
+import Layout from '../../components/Layout';
 
 interface ProductScreenProps {
   product: IProduct;
@@ -65,7 +67,7 @@ function ProductScreen(props: ProductScreenProps) {
       <div className={classes.section}>
         <NextLink href={'/'} passHref>
           <Link>
-            <Typography>back to products</Typography>
+            <Typography>voltar para produtos</Typography>
           </Link>
         </NextLink>
       </div>
@@ -74,8 +76,8 @@ function ProductScreen(props: ProductScreenProps) {
           <Image
             src={product.image}
             alt={product.name}
-            width={640}
-            height={640}
+            width={600}
+            height={600}
             layout={'responsive'}
           />
         </Grid>
@@ -87,18 +89,18 @@ function ProductScreen(props: ProductScreenProps) {
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography>Category: {product.category}</Typography>
+              <Typography>Categoria: {product.category}</Typography>
             </ListItem>
             <ListItem>
-              <Typography>Brand: {product.brand}</Typography>
+              <Typography>Marca: {product.brand}</Typography>
             </ListItem>
             <ListItem>
               <Typography>
-                Rating: {product.rating} stars ({product.numReviews} reviews)
+                Avaliação: {product.rating} estrelas ({product.numReviews} avaliações)
               </Typography>
             </ListItem>
             <ListItem>
-              <Typography>Description: {product.description}</Typography>
+              <Typography>Descrição: {product.description}</Typography>
             </ListItem>
           </List>
         </Grid>
@@ -108,10 +110,10 @@ function ProductScreen(props: ProductScreenProps) {
               <ListItem>
                 <Grid container>
                   <Grid item xs={6}>
-                    <Typography>Price</Typography>
+                    <Typography>Preço</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography>${product.price}</Typography>
+                    <Typography>R$ {product.price}</Typography>
                   </Grid>
                 </Grid>
               </ListItem>
@@ -122,7 +124,7 @@ function ProductScreen(props: ProductScreenProps) {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography>
-                      {product.countInStock > 0 ? 'In stock' : 'Unavailable'}
+                      {product.countInStock > 0 ? 'Em estoque' : 'Indisponível'}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -134,7 +136,7 @@ function ProductScreen(props: ProductScreenProps) {
                   variant={'contained'}
                   color={'primary'}
                 >
-                  Add to cart
+                  Adicionar ao Carrinho
                 </Button>
               </ListItem>
             </List>

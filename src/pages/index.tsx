@@ -54,7 +54,7 @@ const Home: NextPage<IProducts> = ({ products }) => {
   return (
     <Layout>
       <div>
-        <h1>Products</h1>
+        <h1>Produtos</h1>
         <Grid container spacing={3}>
           {products.map((product: IProduct) => (
             <Grid item md={4} key={product._id}>
@@ -72,13 +72,13 @@ const Home: NextPage<IProducts> = ({ products }) => {
                   </CardActionArea>
                 </NextLink>
                 <CardActions>
-                  <Typography>${product.price}</Typography>
+                  <Typography>R$ {product.price}</Typography>
                   <Button
                     onClick={() => addToCartHandler(product)}
                     size={'small'}
                     color={'primary'}
                   >
-                    Add to cart
+                    Adicionar ao Carrinho
                   </Button>
                 </CardActions>
               </Card>

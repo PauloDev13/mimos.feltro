@@ -5,10 +5,8 @@ import NextLink from 'next/link';
 // import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import action from '../components/ActionSnackbar';
 import Cookies from 'js-cookie';
 
-import Layout from '../components/Layout';
 import {
   Button,
   Link,
@@ -20,7 +18,11 @@ import {
 
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
+import { getError } from '../utils/error';
 import { IFormValues } from '../interfaces/IFormValues';
+
+import Layout from '../components/Layout';
+import action from '../components/ActionSnackbar';
 
 const Register = () => {
   const {
@@ -69,12 +71,9 @@ const Register = () => {
 
       await router.push(redirect || '/');
     } catch (err) {
-      enqueueSnackbar(
-        err.response.data ? err.response.data.message : err.message,
-        {
-          variant: 'error',
-        },
-      );
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+      });
     }
   };
 
@@ -83,7 +82,7 @@ const Register = () => {
     <Layout title={'Register'}>
       <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
-          Register
+          Cadastro
         </Typography>
         <List>
           <ListItem>
@@ -210,13 +209,13 @@ const Register = () => {
               fullWidth
               color={'primary'}
             >
-              Register
+              Cadastro
             </Button>
           </ListItem>
           <ListItem>
             Já possui cadastro? &nbsp;
             <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
-              <Link>Faça login</Link>
+              <Link>Faça login aqui.</Link>
             </NextLink>
           </ListItem>
         </List>

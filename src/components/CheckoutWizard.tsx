@@ -10,7 +10,7 @@ const CheckoutWizard = ({ activeStep = 0 }) => {
       activeStep={activeStep}
       alternativeLabel
     >
-      {['Login', 'Endereço Entrega', 'Forma Pagamento', 'Finalizar Compra'].map(
+      {['Login', 'Endereço Entrega', 'Forma Pagamento', 'Finalizar Pedido'].map(
         (step) => (
           <Step key={step}>
             <StepLabel>{step}</StepLabel>

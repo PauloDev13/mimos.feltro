@@ -1,11 +1,14 @@
-import { useContext, useEffect } from 'react';
+// import dynamic from 'next/dynamic';
+import { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-// import dynamic from 'next/dynamic';
+
 import {
   Button,
   Card,
+  CircularProgress,
   Grid,
   Link,
   List,
@@ -18,43 +21,91 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
 
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
+
 import Layout from '../components/Layout';
 import CheckoutWizard from '../components/CheckoutWizard';
+import action from '../components/ActionSnackbar';
+import { getError } from '../utils/error';
 
 const PlaceOrder = () => {
   const router: any = useRouter();
   const classes = useStyles();
+  const {enqueueSnackbar} = useSnackbar();
+
+  const [loading, setLoading] = useState(false);
 
   const {state, dispatch} = useContext(Store);
   const {
+    userInfo,
     cart: {cartItems, shippingAddress, paymentMethod},
   } = state;
   // const {cartItems} = state.cart
   const round2 = (num: number) => Math.round(num * 100 + Number.EPSILON) / 100; //123.456 => 123.46
-  const itemPrice = round2(
+
+  const itemsPrice = round2(
     cartItems.reduce((a, c) => a + c.price * Number(c.quantity), 0),
   );
-  const shippingPrice = itemPrice > 200 ? 0 : 15.0;
-  const taxPrice = round2(itemPrice * 0.15);
-  const totalPrice = round2(itemPrice + shippingPrice + taxPrice);
+
+  const shippingPrice = itemsPrice > 200 ? 0 : 15.0;
+  const taxPrice = round2(itemsPrice * 0.15);
+  const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+
+  const placeOrderHandler = async () => {
+    try {
+      setLoading(true);
+      const {data} = await axios.post(
+        '/api/orders',
+        {
+          orderItems: cartItems,
+          shippingAddress,
+          paymentMethod,
+          itemsPrice,
+          shippingPrice,
+          taxPrice,
+          totalPrice,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${userInfo?.token}`,
+          },
+        },
+      );
+
+      dispatch({type: 'CART_CLEAR'});
+      setLoading(false);
+      router.push(`/order/${data._id}`);
+
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!paymentMethod) {
       router.push('/payment');
     }
-  }, [paymentMethod, router])
+    if (cartItems.length === 0) {
+      router.push('/cart');
+    }
+  }, [paymentMethod, router, cartItems]);
 
   return (
     <Layout title={'Carrinho de compras'}>
       <CheckoutWizard activeStep={3}/>
       <Typography component={'h1'} variant={'h1'}>
-        Ordem de Compra
+        Dados do Pedido
       </Typography>
       <Grid container spacing={1}>
         <Grid item md={9} xs={12}>
+          {/*dados do endereço de entrega*/}
           <Card className={classes.section}>
             <List>
               <ListItem>
@@ -69,6 +120,7 @@ const PlaceOrder = () => {
               </ListItem>
             </List>
           </Card>
+          {/*dados da forma de pagamento*/}
           <Card className={classes.section}>
             <List>
               <ListItem>
@@ -79,6 +131,7 @@ const PlaceOrder = () => {
               <ListItem>{paymentMethod}</ListItem>
             </List>
           </Card>
+          {/*lista de itens da compra*/}
           <Card className={classes.section}>
             <List>
               <ListItem>
@@ -138,12 +191,13 @@ const PlaceOrder = () => {
           </Card>
         </Grid>
         <Grid item md={3} xs={12}>
+          {/*dados do resumo da compra*/}
           <Card className={classes.section}>
             <List>
               <ListItem>
-                <Typography variant={'h2'}>Resumo da compra</Typography>
+                <Typography variant={'h2'}>Resumo</Typography>
               </ListItem>
-
+              {/*valor total dos itens*/}
               <ListItem>
                 <Grid container>
                   <Grid item xs={6}>
@@ -152,11 +206,11 @@ const PlaceOrder = () => {
                 </Grid>
                 <Grid container>
                   <Grid item xs={6}>
-                    <Typography align={'right'}>R${itemPrice}</Typography>
+                    <Typography align={'right'}>R${itemsPrice}</Typography>
                   </Grid>
                 </Grid>
               </ListItem>
-
+              {/*valor imposto*/}
               <ListItem>
                 <Grid container>
                   <Grid item xs={6}>
@@ -169,7 +223,7 @@ const PlaceOrder = () => {
                   </Grid>
                 </Grid>
               </ListItem>
-
+              {/*valor da taxa de entrega*/}
               <ListItem>
                 <Grid container>
                   <Grid item xs={6}>
@@ -182,7 +236,7 @@ const PlaceOrder = () => {
                   </Grid>
                 </Grid>
               </ListItem>
-
+              {/*valor total da compra*/}
               <ListItem>
                 <Grid container>
                   <Grid item xs={6}>
@@ -199,11 +253,22 @@ const PlaceOrder = () => {
                   </Grid>
                 </Grid>
               </ListItem>
+              {/*botão finalizar compra*/}
               <ListItem>
-                <Button variant={'contained'} color={'primary'} fullWidth>
-                  Finalizar Compra
+                <Button
+                  onClick={placeOrderHandler}
+                  variant={'contained'}
+                  color={'primary'}
+                  fullWidth
+                >
+                  Finalizar Pedido
                 </Button>
               </ListItem>
+              {loading && (
+                <ListItem>
+                  <CircularProgress/>
+                </ListItem>
+              )}
             </List>
           </Card>
         </Grid>
