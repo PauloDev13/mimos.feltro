@@ -17,6 +17,11 @@ export interface IOrder {
     country: String;
   };
   paymentMethod: string;
+  paymentResult: {
+    id: String;
+    status: String;
+    email_address: String;
+  };
   itemsPrice: number;
   shippingPrice: number;
   taxPrice: number;
@@ -46,6 +51,11 @@ export const InitialOrder: IOrder = {
     country: '',
   },
   paymentMethod: '',
+  paymentResult: {
+    id: '',
+    status: '',
+    email_address: '',
+  },
   itemsPrice: 0,
   shippingPrice: 0,
   taxPrice: 0,
