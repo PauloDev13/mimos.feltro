@@ -4,6 +4,7 @@ import axios from 'axios';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
 
 import {
   Button,
@@ -76,6 +77,7 @@ const PlaceOrder = () => {
       );
 
       dispatch({type: 'CART_CLEAR'});
+      Cookies.remove('cartItems');
       setLoading(false);
       router.push(`/order/${data._id}`);
 
@@ -98,7 +100,7 @@ const PlaceOrder = () => {
   }, [paymentMethod, router, cartItems]);
 
   return (
-    <Layout title={'Carrinho de compras'}>
+    <Layout title={'Finalizando Pedido'}>
       <CheckoutWizard activeStep={3}/>
       <Typography component={'h1'} variant={'h1'}>
         Dados do Pedido
@@ -114,9 +116,9 @@ const PlaceOrder = () => {
                 </Typography>
               </ListItem>
               <ListItem>
-                {shippingAddress.fullName}, {shippingAddress.address},&nbsp;
-                {shippingAddress.city}, {shippingAddress.postalCode},&nbsp;
-                {shippingAddress.country}
+                {shippingAddress?.fullName}, {shippingAddress?.address},&nbsp;
+                {shippingAddress?.city}, {shippingAddress?.postalCode},&nbsp;
+                {shippingAddress?.country}
               </ListItem>
             </List>
           </Card>

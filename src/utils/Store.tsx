@@ -26,17 +26,17 @@ const initialState: StateProps = {
   darkMode: Cookies.get('darkMode') === 'ON',
   cart: {
     cartItems: Cookies.get('cartItems')
-      ? JSON.parse(Cookies.get('cartItems') as string)
+      ? JSON.parse(String(Cookies.get('cartItems')))
       : [],
     shippingAddress: Cookies.get('shippingAddress')
-      ? JSON.parse(Cookies.get('shippingAddress') as string)
+      ? JSON.parse(String(Cookies.get('shippingAddress')))
       : {},
     paymentMethod: Cookies.get('paymentMethod')
-      ? (Cookies.get('paymentMethod') as string)
+      ? String(Cookies.get('paymentMethod'))
       : '',
   },
   userInfo: Cookies.get('userInfo')
-    ? JSON.parse(Cookies.get('userInfo') as string)
+    ? JSON.parse(String(Cookies.get('userInfo')))
     : null,
 };
 

@@ -25,7 +25,8 @@ const isAuth = async (req: NextApiRequest, res: NextApiResponse, next: any) => {
       if (err) {
         res.status(401).send({ message: 'Credencias de usuário inválidas!' });
       } else {
-        req.body.user = decode;
+        // @ts-ignore
+        req.user = decode;
         next();
       }
     });

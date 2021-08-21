@@ -19,7 +19,8 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
   // busca todos os produtos no database mongodb
   const newOrder = new Order({
     ...req.body,
-    user: req.body.user._id,
+    // @ts-ignore
+    user: req.user._id,
   });
   const order = await newOrder.save();
   // fecha conexão com o database mongodb

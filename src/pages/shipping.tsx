@@ -35,25 +35,27 @@ const Shipping = () => {
     cart: { shippingAddress },
   } = state;
 
+  const { fullName, address, city, country, postalCode }: IFormShippingValues =
+    shippingAddress;
+
   useEffect(() => {
     if (!userInfo) {
       router.push('/login?redirect=/shipping');
     }
-    setValue('fullName', shippingAddress.fullName);
-    setValue('address', shippingAddress.address);
-    setValue('city', shippingAddress.city);
-    setValue('postalCode', shippingAddress.postalCode);
-    setValue('country', shippingAddress.country);
+    setValue('fullName', fullName);
+    setValue('address', address);
+    setValue('city', city);
+    setValue('postalCode', postalCode);
+    setValue('country', country);
   }, [
     router,
     setValue,
-    shippingAddress,
-    shippingAddress.address,
-    shippingAddress.city,
-    shippingAddress.country,
-    shippingAddress.fullName,
-    shippingAddress.postalCode,
     userInfo,
+    address,
+    city,
+    country,
+    fullName,
+    postalCode,
   ]);
 
   const submitHandler = ({

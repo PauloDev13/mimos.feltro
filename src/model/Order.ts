@@ -17,6 +17,7 @@ interface IModelOrder extends Document {
     postalCode: String;
     country: String;
   };
+  paymentMethod: string;
   itemsPrice: number;
   shippingPrice: number;
   taxPrice: number;
