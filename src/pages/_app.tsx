@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { SnackbarProvider } from 'notistack';
 
 import { StoreProvider } from '../utils/Store';
@@ -22,7 +23,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
       <StoreProvider>
-        <Component {...pageProps} />
+        <PayPalScriptProvider options={pageProps} deferLoading={true}>
+          <Component {...pageProps} />
+        </PayPalScriptProvider>
       </StoreProvider>
     </SnackbarProvider>
   );
