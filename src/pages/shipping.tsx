@@ -40,7 +40,7 @@ const Shipping = () => {
 
   useEffect(() => {
     if (!userInfo) {
-      router.push('/login?redirect=/shipping');
+      return router.push('/login?redirect=/shipping');
     }
     setValue('fullName', fullName);
     setValue('address', address);

@@ -88,6 +88,7 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     Cookies.remove('userInfo');
     Cookies.remove('cartItems');
     Cookies.remove('shippingAddress');
+    Cookies.remove('paymentMethod');
     router.push('/');
   };
   // @ts-ignore

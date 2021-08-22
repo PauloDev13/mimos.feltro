@@ -73,13 +73,14 @@ const Register = () => {
     } catch (err) {
       enqueueSnackbar(getError(err), {
         variant: 'error',
+        action,
       });
     }
   };
 
   const classes = useStyles();
   return (
-    <Layout title={'Register'}>
+    <Layout title={'Cadastro'}>
       <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
           Cadastro
