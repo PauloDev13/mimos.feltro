@@ -28,7 +28,6 @@ import useStyles from '../../utils/styles';
 import { getError } from '../../utils/error';
 
 import Layout from '../../components/Layout';
-import CheckoutWizard from '../../components/CheckoutWizard';
 import action from '../../components/ActionSnackbar';
 import { InitialOrder, IOrder } from '../../interfaces/IOrder';
 
@@ -90,9 +89,9 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 }
 
 const Order = ({params}: any) => {
+  const orderId = params.id;
   const classes = useStyles();
   const {enqueueSnackbar} = useSnackbar();
-  const orderId = params.id;
 
   const router: any = useRouter();
   const {state} = useContext(Store);
@@ -102,7 +101,7 @@ const Order = ({params}: any) => {
   const [{loading, error, order, successPay}, dispatch] = useReducer(reducer,
     {
       loading: true, order: InitialOrder, error: '',
-      loadingPay: true, successPay: true, errorPay: ''
+      loadingPay: false, successPay: false, errorPay: ''
     });
 
   const {
@@ -141,7 +140,7 @@ const Order = ({params}: any) => {
       }
     };
 
-    if (!order._id || successPay || order._id && order._id !== orderId) {
+    if (!order._id || successPay || (order._id && order._id !== orderId)) {
       fetchOrder().then();
       if (successPay) {
         dispatch({type: 'PAY_RESET'});
@@ -175,7 +174,7 @@ const Order = ({params}: any) => {
     });
   };
 
-  const onAprove = (data: any, actions: any) => {
+  const onApprove = (data: any, actions: any) => {
     return actions.order.capture().then(async function (details: any) {
       try {
         dispatch({type: 'PAY_REQUEST'});
@@ -208,7 +207,6 @@ const Order = ({params}: any) => {
 
   return (
     <Layout title={`Pedido ${orderId}`}>
-      <CheckoutWizard activeStep={3}/>
       <Typography component={'h1'} variant={'h1'}>
         Pedido ID: {orderId}
       </Typography>
@@ -401,7 +399,7 @@ const Order = ({params}: any) => {
                       <div className={classes.fullWidth}>
                         <PayPalButtons
                           createOrder={createOrder}
-                          onApprove={onAprove}
+                          onApprove={onApprove}
                           onError={onError}/>
                       </div>
                     )}

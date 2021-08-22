@@ -30,6 +30,7 @@ export interface IOrder {
   isDelivered: boolean;
   paidAt: string;
   deliveredAt: string;
+  createdAt: string;
 }
 
 export const InitialOrder: IOrder = {
@@ -64,4 +65,5 @@ export const InitialOrder: IOrder = {
   paidAt: '',
   isDelivered: false,
   deliveredAt: '',
+  createdAt: '',
 };

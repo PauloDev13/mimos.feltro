@@ -74,8 +74,12 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     setAnchorEl(e.currentTarget);
   };
 
-  const loginMenuCloseHandler = () => {
+  const loginMenuCloseHandler = (e: any, redirect: string) => {
     setAnchorEl(null);
+
+    if (redirect) {
+      router.push(redirect);
+    }
   };
 
   const logoutClickHandler = () => {
@@ -140,9 +144,17 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                     open={Boolean(anchorEl)}
                     onClose={loginMenuCloseHandler}
                   >
-                    <MenuItem onClick={loginMenuCloseHandler}>Perfil</MenuItem>
-                    <MenuItem onClick={loginMenuCloseHandler}>
-                      Minha Conta
+                    <MenuItem
+                      onClick={(e) => loginMenuCloseHandler(e, '/profile')}
+                    >
+                      Perfil
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) =>
+                        loginMenuCloseHandler(e, '/order-history')
+                      }
+                    >
+                      Histórico de pedidos
                     </MenuItem>
                     <MenuItem onClick={logoutClickHandler}>Sair</MenuItem>
                   </Menu>

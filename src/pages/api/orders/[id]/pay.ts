@@ -3,8 +3,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../../../utils/db';
 import { onError } from '../../../../utils/error';
 import Order from '../../../../model/Order';
+import { isAuth } from '../../../../utils/auth';
 
-const handler = nc({ onError });
+const handler = nc({onError});
+
+handler.use(isAuth);
 
 handler.put(
   async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
@@ -24,11 +27,11 @@ handler.put(
       // fecha conexão com o database mongodb
       await db.disconnected();
       // retorna uma mensagem
-      res.send({ message: 'Pedido Pago', order: paidOrder });
+      res.send({message: 'Pedido Pago', order: paidOrder});
     } else {
       await db.disconnected();
       // retorna uma mensagem
-      res.status(404).send({ message: 'Pedido não encontrado!' });
+      res.status(404).send({message: 'Pedido não encontrado!'});
     }
   },
 );

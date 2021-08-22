@@ -6,6 +6,11 @@ import { SnackbarProvider } from 'notistack';
 import { StoreProvider } from '../utils/Store';
 import Grow from '@material-ui/core/Grow';
 
+const initialOptions = {
+  'client-id': process.env.PAYPAL_CLIENT_ID || 'sb',
+  currency: 'BRL',
+};
+
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
@@ -13,6 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       jssStyles?.parentElement?.removeChild(jssStyles);
     }
   }, []);
+
   return (
     <SnackbarProvider
       // @ts-ignore
@@ -23,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
       <StoreProvider>
-        <PayPalScriptProvider options={pageProps} deferLoading={true}>
+        <PayPalScriptProvider options={initialOptions} deferLoading={true}>
           <Component {...pageProps} />
         </PayPalScriptProvider>
       </StoreProvider>
