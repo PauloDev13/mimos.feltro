@@ -121,7 +121,7 @@ const Order = ({params}: any) => {
 
   useEffect(() => {
     if (!userInfo) {
-      router.push('/login');
+      return router.push('/login');
     }
     const fetchOrder = async () => {
       try {
@@ -140,7 +140,10 @@ const Order = ({params}: any) => {
       }
     };
 
-    if (!order._id || successPay || (order._id && order._id !== orderId)) {
+    if (!order._id ||
+      successPay ||
+      (order._id && order._id !== orderId)
+    ) {
       fetchOrder().then();
       if (successPay) {
         dispatch({type: 'PAY_RESET'});
@@ -151,7 +154,8 @@ const Order = ({params}: any) => {
           headers: {authorization: `Bearer ${userInfo?.token}`}
         });
         paypalDispatch({
-          type: 'resetOptions', value: {
+          type: 'resetOptions',
+          value: {
             'client-id': clientId,
             currency: 'BRL'
           }
@@ -167,7 +171,9 @@ const Order = ({params}: any) => {
   const createOrder = (data: any, actions: any) => {
     return actions.order.create({
       purchase_units: [
-        {amount: {value: totalPrice}}
+        {
+          amount: {value: totalPrice}
+        }
       ]
     }).then((orderID: any) => {
       return orderID;
@@ -292,7 +298,7 @@ const Order = ({params}: any) => {
                         {orderItems.map((item) => (
                           <TableRow key={item._id}>
                             <TableCell>
-                              <NextLink href={`/product/${item.name}`} passHref>
+                              <NextLink href={`/product/${item.slug}`} passHref>
                                 <Link>
                                   <Image
                                     src={item.image}
@@ -305,7 +311,7 @@ const Order = ({params}: any) => {
                             </TableCell>
 
                             <TableCell>
-                              <NextLink href={`/product/${item.name}`} passHref>
+                              <NextLink href={`/product/${item.slug}`} passHref>
                                 <Link>
                                   <Typography>{item.name}</Typography>
                                 </Link>

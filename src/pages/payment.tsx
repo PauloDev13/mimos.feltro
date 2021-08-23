@@ -79,12 +79,12 @@ const Payment = () => {
                 />
                 <FormControlLabel
                   label={'Parcelado'}
-                  value={'Stripe'}
+                  value={'Parcelado'}
                   control={<Radio />}
                 />
                 <FormControlLabel
                   label={'Dinheiro'}
-                  value={'Cash'}
+                  value={'Em dinheiro'}
                   control={<Radio />}
                 />
               </RadioGroup>

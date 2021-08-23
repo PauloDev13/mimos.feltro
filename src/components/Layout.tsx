@@ -157,6 +157,15 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                     >
                       Histórico de pedidos
                     </MenuItem>
+                    {userInfo.isAdmin && (
+                      <MenuItem
+                        onClick={(e) =>
+                          loginMenuCloseHandler(e, '/admin/dashboard')
+                        }
+                      >
+                        Admin dashboard
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={logoutClickHandler}>Sair</MenuItem>
                   </Menu>
                 </>

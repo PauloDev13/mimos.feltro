@@ -5,6 +5,7 @@ export interface IOrder {
       _id: string;
       name: string;
       quantity: number;
+      slug: string;
       image: string;
       price: number;
     },
@@ -40,6 +41,7 @@ export const InitialOrder: IOrder = {
       _id: '',
       name: '',
       quantity: 0,
+      slug: '',
       image: '',
       price: 0,
     },

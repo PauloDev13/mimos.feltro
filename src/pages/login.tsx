@@ -43,9 +43,9 @@ const Login = () => {
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/');
+      router.push(redirect || '/');
     }
-  }, [router, userInfo]);
+  }, [router, userInfo, redirect]);
 
   const submitHandler = async ({ email, password }: IFormValues) => {
     try {
