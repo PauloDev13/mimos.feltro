@@ -17,15 +17,18 @@ const signToken = (user: IUser) => {
   );
 };
 
-const isAuth = async (req: NextApiRequest, res: NextApiResponse, next: any) => {
+const isAuth = async (
+  req: NextApiRequest | any,
+  res: NextApiResponse,
+  next: any,
+) => {
   const { authorization } = req.headers;
   if (authorization) {
     const token = authorization.slice(7, authorization.length);
-    verify(token, process.env.JWT_SECRET || '', (err, decode) => {
+    verify(token, process.env.JWT_SECRET || '', (err: any, decode: any) => {
       if (err) {
         res.status(401).send({ message: 'Credencias de usuário inválidas!' });
       } else {
-        // @ts-ignore
         req.user = decode;
         next();
       }
@@ -34,5 +37,18 @@ const isAuth = async (req: NextApiRequest, res: NextApiResponse, next: any) => {
     res.status(401).send({ message: 'Usuário não autorizado!' });
   }
 };
+const isAdmin = async (
+  req: NextApiRequest | any,
+  res: NextApiResponse,
+  next: any,
+) => {
+  if (req.user.isAdmin) {
+    next();
+  } else {
+    res.status(401).send({
+      message: `Usuário ${req.user.email} não é Administrador do Mimos em Feltro!`,
+    });
+  }
+};
 
-export {signToken, isAuth};
+export {signToken, isAuth, isAdmin};

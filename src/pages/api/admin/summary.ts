@@ -2,7 +2,7 @@ import nc from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import Order from '../../../model/Order';
-import { isAuth } from '../../../utils/auth';
+import { isAdmin, isAuth } from '../../../utils/auth';
 import { onError } from '../../../utils/error';
 import db from '../../../utils/db';
 import Product from '../../../model/Product';
@@ -12,7 +12,7 @@ const handler = nc({
   onError,
 });
 
-handler.use(isAuth);
+handler.use(isAuth, isAdmin);
 
 handler.get(async (req: NextApiRequest, res: NextApiResponse) => {
   // abre conexão com o database mongodb
