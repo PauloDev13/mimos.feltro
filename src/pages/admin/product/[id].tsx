@@ -33,7 +33,9 @@ interface ActionProps {
 
 interface StateProps {
   loading: boolean;
+  loadingUpdate: boolean;
   error: string;
+  errorUpdate: string;
 }
 
 const ProductEdit = ({ params }: any) => {
@@ -43,9 +45,11 @@ const ProductEdit = ({ params }: any) => {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const [{ loading, error }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
     loading: true,
+    loadingUpdate: false,
     error: '',
+    errorUpdate: '',
   });
 
   const {
@@ -76,6 +80,27 @@ const ProductEdit = ({ params }: any) => {
           ...state,
           loading: false,
           error: action.payload,
+        };
+      }
+      case 'UPDATE_REQUEST': {
+        return {
+          ...state,
+          loadingUpdate: true,
+          errorUpdate: '',
+        };
+      }
+      case 'UPDATE_SUCCESS': {
+        return {
+          ...state,
+          loadingUpdate: false,
+          errorUpdate: '',
+        };
+      }
+      case 'UPDATE_FAIL': {
+        return {
+          ...state,
+          loadingUpdate: false,
+          errorUpdate: action.payload,
         };
       }
       default:
@@ -118,23 +143,29 @@ const ProductEdit = ({ params }: any) => {
     }
   }, [productId, router, setValue, userInfo]);
 
-  const submitHandler = async ({ name }: any) => {
+  const submitHandler = async (productUpdate: IFormUpdateProducts) => {
     try {
-      const { data } = await axios.put(
+      dispatch({ type: 'UPDATE_REQUEST' });
+      await axios.put(
         `/api/admin/products/${productId}`,
         {
-          name,
+          productUpdate,
         },
         {
           headers: { authorization: `Bearer ${userInfo?.token}` },
         },
       );
 
+      dispatch({ type: 'UPDATE_SUCCESS' });
+
       enqueueSnackbar('Produto atualizado com sucesso!', {
         variant: 'success',
         action,
       });
+
+      router.push('/admin/products');
     } catch (err) {
+      dispatch({ type: 'UPDATE_FAIL' });
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -372,6 +403,7 @@ const ProductEdit = ({ params }: any) => {
                         >
                           Atualizar
                         </Button>
+                        {loadingUpdate && <CircularProgress />}
                       </ListItem>
                     </List>
                   </form>
