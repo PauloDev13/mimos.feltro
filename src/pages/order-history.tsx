@@ -94,14 +94,14 @@ const OrderHistory = () => {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
-
+        console.log('PÁGINA HISTORY' + JSON.stringify(orders));
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchOrders().then();
-  }, [userInfo, router]);
+  }, [userInfo, router, orders]);
 
   return (
     <Layout title={'Histórico de Pedidos'}>

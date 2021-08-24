@@ -37,7 +37,6 @@ const Profile = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const router: any = useRouter();
-  const { redirect } = router.query;
 
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
@@ -99,16 +98,18 @@ const Profile = () => {
       <Grid container spacing={1}>
         <Grid item md={3} xs={12}>
           <Card className={classes.section}>
-            <NextLink href={'/profile'}>
-              <ListItem selected button component={'a'}>
-                <ListItemText primary={'Perfil do usuário'} />
-              </ListItem>
-            </NextLink>
-            <NextLink href={'/order-history'} passHref>
-              <ListItem button component={'a'}>
-                <ListItemText primary={'Histórico de pedidos'} />
-              </ListItem>
-            </NextLink>
+            <List>
+              <NextLink href={'/profile'}>
+                <ListItem selected button component={'a'}>
+                  <ListItemText primary={'Perfil do usuário'} />
+                </ListItem>
+              </NextLink>
+              <NextLink href={'/order-history'} passHref>
+                <ListItem button component={'a'}>
+                  <ListItemText primary={'Histórico de pedidos'} />
+                </ListItem>
+              </NextLink>
+            </List>
           </Card>
         </Grid>
         <Grid item md={9} xs={12}>

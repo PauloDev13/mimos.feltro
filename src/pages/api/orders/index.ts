@@ -14,7 +14,6 @@ const handler = nc({
 handler.use(isAuth);
 
 handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log('BODY NA API FINALIZAÇÃO DO PEDIDO ' + JSON.stringify(req.body));
   // abre conexão com o database mongodb
   await db.connect();
   // busca todos os produtos no database mongodb
@@ -24,8 +23,6 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
     user: req.user._id,
   });
   const order = await newOrder.save();
-  console.log('ORDER NA API FINALIZAÇÃO DO PEDIDO ' + JSON.stringify(req.body));
-
   // fecha conexão com o database mongodb
   await db.disconnected();
   // retorna a ordem de compra criada

@@ -17,7 +17,7 @@ handler.get(
     // fecha conexão com o database mongodb
     await db.disconnected();
     // retorna o produto
-    res.send(order);
+    return res.send(order);
   },
 );
 export default handler;

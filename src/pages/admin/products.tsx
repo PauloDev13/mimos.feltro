@@ -32,19 +32,17 @@ interface ActionProps {
 
 interface StateProps {
   loading: boolean;
-  orders: ISummaryOrder[];
+  products: ISummaryProduct[];
   error: string;
 }
 
-interface ISummaryOrder {
+interface ISummaryProduct {
   _id: string;
-  user: { name: string };
-  createdAt: string;
-  totalPrice: number;
-  paidAt: string;
-  isPaid: string;
-  deliveredAt: string;
-  isDelivered: string;
+  name: string;
+  price: number;
+  category: string;
+  countInStock: number;
+  rating: number;
 }
 
 function reducer(state: StateProps, action: ActionProps): StateProps {
@@ -60,7 +58,7 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
       return {
         ...state,
         loading: false,
-        orders: action.payload,
+        products: action.payload,
         error: '',
       };
     }
@@ -76,12 +74,12 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
   }
 }
 
-const AdminOrder = () => {
+const AdminProduct = () => {
   const router: any = useRouter();
   const { state } = useContext(Store);
-  const [{ loading, orders, error }, dispatch] = useReducer(reducer, {
+  const [{ loading, products, error }, dispatch] = useReducer(reducer, {
     loading: true,
-    orders: [],
+    products: [],
     error: '',
   });
 
@@ -96,7 +94,7 @@ const AdminOrder = () => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/admin/orders`, {
+        const { data } = await axios.get(`/api/admin/products`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
@@ -111,7 +109,7 @@ const AdminOrder = () => {
   }, [userInfo, router]);
 
   return (
-    <Layout title={'Histórico de Pedidos'}>
+    <Layout title={'Produtos'}>
       <Grid container spacing={1}>
         <Grid item md={2} xs={12}>
           <Card className={classes.section}>
@@ -123,13 +121,13 @@ const AdminOrder = () => {
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
-                <ListItem selected button component={'a'}>
+                <ListItem button component={'a'}>
                   <ListItemText primary={'Pedidos'} />
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
-                <ListItem button component={'a'}>
+                <ListItem selected button component={'a'}>
                   <ListItemText primary={'Produtos'} />
                 </ListItem>
               </NextLink>
@@ -156,43 +154,44 @@ const AdminOrder = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell>ID</TableCell>
-                          <TableCell>USUÁRIO</TableCell>
-                          <TableCell>DATA</TableCell>
-                          <TableCell align={'right'}>TOTAL</TableCell>
-                          <TableCell>PAGAMENTO</TableCell>
-                          <TableCell>ENVIO</TableCell>
+                          <TableCell>NOME</TableCell>
+                          <TableCell align={'right'}>PREÇO</TableCell>
+                          <TableCell>CATEGORIA</TableCell>
+                          <TableCell align={'center'}>ESTOQUE</TableCell>
+                          <TableCell align={'center'}>AVALIAÇÃO</TableCell>
                           <TableCell align={'center'}>AÇÃO</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {orders.map((order) => (
-                          <TableRow key={order._id}>
-                            <TableCell>{order._id.substring(20, 24)}</TableCell>
+                        {products.map((product) => (
+                          <TableRow key={product._id}>
                             <TableCell>
-                              {order.user
-                                ? order.user.name
-                                : 'Usuário excluído'}
+                              {product._id.substring(20, 24)}
                             </TableCell>
-                            <TableCell>{order.createdAt}</TableCell>
+                            <TableCell>{product.name}</TableCell>
                             <TableCell align={'right'}>
-                              R$ {order.totalPrice}
+                              R$ {product.price}
                             </TableCell>
-                            <TableCell>
-                              {order.isPaid
-                                ? `pago em ${order.paidAt}`
-                                : 'em aberto'}
-                            </TableCell>
-                            <TableCell>
-                              {order.isDelivered
-                                ? `enviado em ${order.deliveredAt}`
-                                : 'não enviado'}
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell align={'center'}>
+                              {product.countInStock}
                             </TableCell>
                             <TableCell align={'center'}>
-                              <NextLink href={`/order/${order._id}`} passHref>
+                              {product.rating}
+                            </TableCell>
+                            <TableCell align={'center'}>
+                              <NextLink
+                                href={`/admin/product/${product._id}`}
+                                passHref
+                              >
                                 <Button size={'small'} variant={'contained'}>
-                                  Detalhes
+                                  Editar
                                 </Button>
-                              </NextLink>
+                              </NextLink>{' '}
+                              &nbsp;
+                              <Button size={'small'} variant={'contained'}>
+                                Delete
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -208,4 +207,4 @@ const AdminOrder = () => {
     </Layout>
   );
 };
-export default AdminOrder;
+export default AdminProduct;

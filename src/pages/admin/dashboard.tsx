@@ -101,16 +101,25 @@ const AdminDashboard = () => {
       <Grid container spacing={1}>
         <Grid item md={3} xs={12}>
           <Card className={classes.section}>
-            <NextLink href={'/admin/dashboard'}>
-              <ListItem selected button component={'a'}>
-                <ListItemText primary={'Admin Dashboard'} />
-              </ListItem>
-            </NextLink>
-            <NextLink href={'/admin/orders'} passHref>
-              <ListItem button component={'a'}>
-                <ListItemText primary={'Pedidos'} />
-              </ListItem>
-            </NextLink>
+            <List>
+              <NextLink href={'/admin/dashboard'}>
+                <ListItem selected button component={'a'}>
+                  <ListItemText primary={'Admin Dashboard'} />
+                </ListItem>
+              </NextLink>
+
+              <NextLink href={'/admin/orders'} passHref>
+                <ListItem button component={'a'}>
+                  <ListItemText primary={'Pedidos'} />
+                </ListItem>
+              </NextLink>
+
+              <NextLink href={'/admin/products'} passHref>
+                <ListItem button component={'a'}>
+                  <ListItemText primary={'Produtos'} />
+                </ListItem>
+              </NextLink>
+            </List>
           </Card>
         </Grid>
 
