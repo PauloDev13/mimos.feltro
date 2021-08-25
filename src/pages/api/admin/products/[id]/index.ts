@@ -54,4 +54,23 @@ handler.put(async (req: NextApiRequest, res: NextApiResponse) => {
   }
 });
 
+handler.delete(async (req: NextApiRequest, res: NextApiResponse) => {
+  // abre conexão com o database mongodb
+  await db.connect();
+  // procura pelo produto no database mongodb com o ID informado
+  const product = await Product.findById(req.query.id);
+  // se o produto existe no database mongodb
+  if (product) {
+    // exclui o produto no database mongodb
+    await product.remove();
+    // fecha conexão com o database mongodb
+    await db.disconnected();
+    // exibe mensagem de sucesso
+    res.send({ message: 'Produto excluído' });
+  } else {
+    // exibe mensagem de erro com o status code 404
+    res.status(404).send({ message: 'Produto não encontrado!' });
+  }
+});
+
 export default handler;

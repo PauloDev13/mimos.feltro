@@ -151,7 +151,7 @@ const Order = ({ params }: any) => {
     { loading, error, order, successPay, loadingDeliver, successDeliver },
     dispatch,
   ] = useReducer(reducer, {
-    loading: true,
+    loading: false,
     order: InitialOrder,
     error: '',
     loadingPay: false,
@@ -192,6 +192,9 @@ const Order = ({ params }: any) => {
         });
 
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        console.log(
+          'RESPOSTA DA PÁGINA PEDIDOS NO GET POR ID: ' + JSON.stringify(data),
+        );
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -260,16 +263,14 @@ const Order = ({ params }: any) => {
       try {
         dispatch({ type: 'PAY_REQUEST' });
         // @ts-ignore
-        const { data } = axios.put(`/api/orders/${order._id}/pay`, details, {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
-        });
-
+        const { data } = await axios.put(
+          `/api/orders/${order._id}/pay`,
+          details,
+          {
+            headers: { authorization: `Bearer ${userInfo?.token}` },
+          },
+        );
         dispatch({ type: 'PAY_SUCCESS', payload: data });
-
-        enqueueSnackbar('Pedido foi pago', {
-          variant: 'success',
-          action,
-        });
       } catch (err) {
         dispatch({ type: 'PAY_FAIL', payload: getError(err) });
         enqueueSnackbar(getError(err), {
@@ -290,9 +291,8 @@ const Order = ({ params }: any) => {
   const deliverOderHandler = async () => {
     try {
       dispatch({ type: 'DELIVER_REQUEST' });
-
       // @ts-ignore
-      const { data } = axios.put(
+      const { data } = await axios.put(
         `/api/orders/${order._id}/deliver`,
         {},
         {
@@ -301,7 +301,6 @@ const Order = ({ params }: any) => {
       );
 
       dispatch({ type: 'DELIVER_SUCCESS', payload: data });
-
       enqueueSnackbar('Pedido foi enviado', {
         variant: 'success',
         action,

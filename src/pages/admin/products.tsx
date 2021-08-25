@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
 import {
@@ -24,6 +25,7 @@ import { getError } from '../../utils/error';
 import useStyles from '../../utils/styles';
 
 import Layout from '../../components/Layout';
+import action from '../../components/ActionSnackbar';
 
 interface ActionProps {
   type: string;
@@ -32,8 +34,12 @@ interface ActionProps {
 
 interface StateProps {
   loading: boolean;
+  loadingCreate: boolean;
+  loadingDelete: boolean;
+  successDelete: boolean;
   products: ISummaryProduct[];
   error: string;
+  // errorCreate: string;
 }
 
 interface ISummaryProduct {
@@ -69,6 +75,50 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
         error: action.payload,
       };
     }
+    case 'CREATE_REQUEST': {
+      return {
+        ...state,
+        loadingCreate: true,
+      };
+    }
+    case 'CREATE_SUCCESS': {
+      return {
+        ...state,
+        loadingCreate: false,
+      };
+    }
+    case 'CREATE_FAIL': {
+      return {
+        ...state,
+        loadingCreate: false,
+      };
+    }
+    case 'DELETE_REQUEST': {
+      return {
+        ...state,
+        loadingDelete: true,
+      };
+    }
+    case 'DELETE_SUCCESS': {
+      return {
+        ...state,
+        loadingDelete: false,
+        successDelete: true,
+      };
+    }
+    case 'DELETE_FAIL': {
+      return {
+        ...state,
+        loadingDelete: false,
+      };
+    }
+    case 'DELETE_RESET': {
+      return {
+        ...state,
+        loadingDelete: false,
+        successDelete: false,
+      };
+    }
     default:
       return state;
   }
@@ -77,14 +127,81 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 const AdminProduct = () => {
   const router: any = useRouter();
   const { state } = useContext(Store);
-  const [{ loading, products, error }, dispatch] = useReducer(reducer, {
-    loading: true,
+  const [
+    { loading, products, error, loadingCreate, loadingDelete, successDelete },
+    dispatch,
+  ] = useReducer(reducer, {
+    loading: false,
+    loadingCreate: false,
+    loadingDelete: false,
+    successDelete: false,
     products: [],
     error: '',
   });
 
   const { userInfo } = state;
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const createHandler = async () => {
+    if (!window.confirm('Criar um novo produto?')) {
+      return;
+    }
+
+    try {
+      dispatch({ type: 'CREATE_REQUEST' });
+
+      const { data } = await axios.post(
+        `/api/admin/products`,
+        {},
+        {
+          headers: {
+            authorization: `Bearer ${userInfo?.token}`,
+          },
+        },
+      );
+
+      dispatch({ type: 'CREATE_SUCCESS' });
+      enqueueSnackbar('Produto criado com sucesso', {
+        variant: 'success',
+        action,
+      });
+      router.push(`/admin/product/${data.product._id}`);
+    } catch (err) {
+      dispatch({ type: 'CREATE_FAIL' });
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action,
+      });
+    }
+  };
+
+  const deleteHandler = async (productId: string) => {
+    if (!window.confirm('Excluir o produto?')) {
+      return;
+    }
+
+    try {
+      dispatch({ type: 'DELETE_REQUEST' });
+      await axios.delete(`/api/admin/products/${productId}`, {
+        headers: {
+          authorization: `Bearer ${userInfo?.token}`,
+        },
+      });
+
+      dispatch({ type: 'DELETE_SUCCESS' });
+      enqueueSnackbar('Produto excluído com sucesso', {
+        variant: 'success',
+        action,
+      });
+    } catch (err) {
+      dispatch({ type: 'DELETE_FAIL' });
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!userInfo) {
@@ -105,8 +222,12 @@ const AdminProduct = () => {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-    fetchData();
-  }, [userInfo, router]);
+    if (successDelete) {
+      dispatch({ type: 'DELETE_RESET' });
+    } else {
+      fetchData();
+    }
+  }, [userInfo, router, successDelete]);
 
   return (
     <Layout title={'Produtos'}>
@@ -139,9 +260,24 @@ const AdminProduct = () => {
           <Card className={classes.section}>
             <List>
               <ListItem>
-                <Typography component={'h1'} variant={'h1'}>
-                  Pedidos
-                </Typography>
+                <Grid container>
+                  <Grid alignItems={'flex-start'} item xs={6}>
+                    <Typography component={'h1'} variant={'h1'}>
+                      Produtos
+                    </Typography>
+                    {loadingDelete && <CircularProgress />}
+                  </Grid>
+                  <Grid alignItems={'flex-end'} item xs={6}>
+                    <Button
+                      onClick={createHandler}
+                      color={'primary'}
+                      variant={'contained'}
+                    >
+                      Novo produto
+                    </Button>
+                    {loadingCreate && <CircularProgress />}
+                  </Grid>
+                </Grid>
               </ListItem>
               <ListItem>
                 {loading ? (
@@ -187,10 +323,14 @@ const AdminProduct = () => {
                                 <Button size={'small'} variant={'contained'}>
                                   Editar
                                 </Button>
-                              </NextLink>{' '}
+                              </NextLink>
                               &nbsp;
-                              <Button size={'small'} variant={'contained'}>
-                                Delete
+                              <Button
+                                onClick={() => deleteHandler(product._id)}
+                                size={'small'}
+                                variant={'contained'}
+                              >
+                                Excluir
                               </Button>
                             </TableCell>
                           </TableRow>
