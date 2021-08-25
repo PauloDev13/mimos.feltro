@@ -1,11 +1,12 @@
-// import dynamic from 'next/dynamic';
+// imports externos
 import { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+import NextLink from 'next/link';
 import Image from 'next/image';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -22,15 +23,14 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
+import { getError } from '../utils/error';
 
-import Layout from '../components/Layout';
 import CheckoutWizard from '../components/CheckoutWizard';
 import action from '../components/ActionSnackbar';
-import { getError } from '../utils/error';
+import Layout from '../components/Layout';
 
 const PlaceOrder = () => {
   const router: any = useRouter();
@@ -44,7 +44,7 @@ const PlaceOrder = () => {
     userInfo,
     cart: {cartItems, shippingAddress, paymentMethod},
   } = state;
-  // const {cartItems} = state.cart
+
   const round2 = (num: number) => Math.round(num * 100 + Number.EPSILON) / 100; //123.456 => 123.46
 
   const itemsPrice = round2(
@@ -55,7 +55,7 @@ const PlaceOrder = () => {
   const taxPrice = round2(itemsPrice * 0.15);
   const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
-  const placeOrderHandler = async () => {
+  const placeOrderHandler = async (): Promise<void> => {
     try {
       setLoading(true);
       const {data} = await axios.post(
@@ -278,5 +278,4 @@ const PlaceOrder = () => {
     </Layout>
   );
 };
-export default PlaceOrder;
-// export default dynamic(() => Promise.resolve(CartScreen), {ssr: false});
+export default dynamic(() => Promise.resolve(PlaceOrder), {ssr: false});

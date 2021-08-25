@@ -1,7 +1,8 @@
+// imports externos
 import { createContext, useReducer } from 'react';
 import { NextPage } from 'next';
 import Cookies from 'js-cookie';
-
+// imports locais
 import { IProduct } from '../interfaces/IProduct';
 import { IFormShippingValues } from '../interfaces/IFormShippingValues';
 import { IUser } from '../interfaces/IUser';
@@ -47,15 +48,16 @@ interface ContextProps {
 
 export const Store = createContext<ContextProps>({
   state: initialState,
-  dispatch: () => {},
+  dispatch: () => {
+  },
 });
 
 const reducer = (state: StateProps, action: ActionProps): StateProps => {
   switch (action.type) {
     case 'DARK_MODE_ON':
-      return { ...state, darkMode: true };
+      return {...state, darkMode: true};
     case 'DARK_MODE_OFF':
-      return { ...state, darkMode: false };
+      return {...state, darkMode: false};
     case 'CART_ADD_ITEM': {
       const newItem = action.payload;
 
@@ -65,13 +67,13 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
 
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
-            item.name === existItem.name ? newItem : item,
-          )
+          item.name === existItem.name ? newItem : item,
+        )
         : [...state.cart.cartItems, newItem];
 
       Cookies.set('cartItems', JSON.stringify(cartItems));
 
-      return { ...state, cart: { ...state.cart, cartItems } };
+      return {...state, cart: {...state.cart, cartItems}};
     }
     case 'CART_REMOVE_ITEM': {
       const cartItems = state.cart.cartItems?.filter(
@@ -79,28 +81,28 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
       );
 
       Cookies.set('cartItems', JSON.stringify(cartItems));
-      return { ...state, cart: { ...state.cart, cartItems } };
+      return {...state, cart: {...state.cart, cartItems}};
     }
     case 'SAVE_SHIPPING_ADDRESS': {
       return {
         ...state,
-        cart: { ...state.cart, shippingAddress: action.payload },
+        cart: {...state.cart, shippingAddress: action.payload},
       };
     }
     case 'SAVE_PAYMENT_METHOD': {
       return {
         ...state,
-        cart: { ...state.cart, paymentMethod: action.payload },
+        cart: {...state.cart, paymentMethod: action.payload},
       };
     }
     case 'CART_CLEAR': {
       return {
         ...state,
-        cart: { ...state.cart, cartItems: [] },
+        cart: {...state.cart, cartItems: []},
       };
     }
     case 'USER_LOGIN': {
-      return { ...state, userInfo: action.payload };
+      return {...state, userInfo: action.payload};
     }
     case 'USER_LOGOUT': {
       return {
@@ -124,8 +126,8 @@ const reducer = (state: StateProps, action: ActionProps): StateProps => {
   }
 };
 
-export const StoreProvider: NextPage = ({ children }) => {
+export const StoreProvider: NextPage = ({children}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const value = { state, dispatch };
+  const value = {state, dispatch};
   return <Store.Provider value={value}>{children}</Store.Provider>;
 };

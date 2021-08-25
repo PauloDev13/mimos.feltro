@@ -1,9 +1,10 @@
+// imports externos
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
-import { useSnackbar } from 'notistack';
 import axios from 'axios';
-
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -20,17 +21,14 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
+// imports locais
 import { Store } from '../../utils/Store';
-import { getError } from '../../utils/error';
 import useStyles from '../../utils/styles';
+import { getError } from '../../utils/error';
 
-import Layout from '../../components/Layout';
+import { IActionsProps } from '../../interfaces/IActionsProps';
 import action from '../../components/ActionSnackbar';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
+import Layout from '../../components/Layout';
 
 interface StateProps {
   loading: boolean;
@@ -39,7 +37,6 @@ interface StateProps {
   successDelete: boolean;
   products: ISummaryProduct[];
   error: string;
-  // errorCreate: string;
 }
 
 interface ISummaryProduct {
@@ -51,7 +48,7 @@ interface ISummaryProduct {
   rating: number;
 }
 
-function reducer(state: StateProps, action: ActionProps): StateProps {
+function reducer(state: StateProps, action: IActionsProps): StateProps {
   switch (action.type) {
     case 'FETCH_REQUEST': {
       return {
@@ -126,9 +123,9 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 
 const AdminProduct = () => {
   const router: any = useRouter();
-  const { state } = useContext(Store);
+  const {state} = useContext(Store);
   const [
-    { loading, products, error, loadingCreate, loadingDelete, successDelete },
+    {loading, products, error, loadingCreate, loadingDelete, successDelete},
     dispatch,
   ] = useReducer(reducer, {
     loading: false,
@@ -139,9 +136,9 @@ const AdminProduct = () => {
     error: '',
   });
 
-  const { userInfo } = state;
+  const {userInfo} = state;
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const createHandler = async () => {
     if (!window.confirm('Criar um novo produto?')) {
@@ -149,9 +146,9 @@ const AdminProduct = () => {
     }
 
     try {
-      dispatch({ type: 'CREATE_REQUEST' });
+      dispatch({type: 'CREATE_REQUEST'});
 
-      const { data } = await axios.post(
+      const {data} = await axios.post(
         `/api/admin/products`,
         {},
         {
@@ -161,14 +158,14 @@ const AdminProduct = () => {
         },
       );
 
-      dispatch({ type: 'CREATE_SUCCESS' });
+      dispatch({type: 'CREATE_SUCCESS'});
       enqueueSnackbar('Produto criado com sucesso', {
         variant: 'success',
         action,
       });
       router.push(`/admin/product/${data.product._id}`);
     } catch (err) {
-      dispatch({ type: 'CREATE_FAIL' });
+      dispatch({type: 'CREATE_FAIL'});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -182,20 +179,20 @@ const AdminProduct = () => {
     }
 
     try {
-      dispatch({ type: 'DELETE_REQUEST' });
+      dispatch({type: 'DELETE_REQUEST'});
       await axios.delete(`/api/admin/products/${productId}`, {
         headers: {
           authorization: `Bearer ${userInfo?.token}`,
         },
       });
 
-      dispatch({ type: 'DELETE_SUCCESS' });
+      dispatch({type: 'DELETE_SUCCESS'});
       enqueueSnackbar('Produto excluído com sucesso', {
         variant: 'success',
         action,
       });
     } catch (err) {
-      dispatch({ type: 'DELETE_FAIL' });
+      dispatch({type: 'DELETE_FAIL'});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -210,20 +207,20 @@ const AdminProduct = () => {
 
     const fetchData = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/admin/products`, {
+        dispatch({type: 'FETCH_REQUEST'});
+        const {data} = await axios.get(`/api/admin/products`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
     if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
+      dispatch({type: 'DELETE_RESET'});
     } else {
       fetchData();
     }
@@ -237,25 +234,25 @@ const AdminProduct = () => {
             <List>
               <NextLink href={'/admin/dashboard'}>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Admin Dashboard'} />
+                  <ListItemText primary={'Admin Dashboard'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Pedidos'} />
+                  <ListItemText primary={'Pedidos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Produtos'} />
+                  <ListItemText primary={'Produtos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/users'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Usuários'} />
+                  <ListItemText primary={'Usuários'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -271,7 +268,7 @@ const AdminProduct = () => {
                     <Typography component={'h1'} variant={'h1'}>
                       Produtos
                     </Typography>
-                    {loadingDelete && <CircularProgress />}
+                    {loadingDelete && <CircularProgress/>}
                   </Grid>
                   <Grid alignItems={'flex-end'} item xs={6}>
                     <Button
@@ -281,13 +278,13 @@ const AdminProduct = () => {
                     >
                       Novo produto
                     </Button>
-                    {loadingCreate && <CircularProgress />}
+                    {loadingCreate && <CircularProgress/>}
                   </Grid>
                 </Grid>
               </ListItem>
               <ListItem>
                 {loading ? (
-                  <CircularProgress />
+                  <CircularProgress/>
                 ) : error ? (
                   <Typography className={classes.error}>{error}</Typography>
                 ) : (
@@ -353,4 +350,4 @@ const AdminProduct = () => {
     </Layout>
   );
 };
-export default AdminProduct;
+export default dynamic(() => Promise.resolve(AdminProduct), {ssr: false});

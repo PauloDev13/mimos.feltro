@@ -1,9 +1,10 @@
+// imports externos
 import { useContext } from 'react';
-import axios from 'axios';
-import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-//import dynamic from 'next/dynamic';
+import type { NextPage } from 'next';
+import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -14,14 +15,13 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
-import action from '../components/ActionSnackbar';
-
-import Layout from '../components/Layout';
-import db from '../utils/db';
-import Product from '../model/Product';
-import { IProduct } from '../interfaces/IProduct';
+// imports locais
 import { Store } from '../utils/Store';
+import db from '../utils/db';
+import { IProduct } from '../interfaces/IProduct';
+import Product from '../model/Product';
+import action from '../components/ActionSnackbar';
+import Layout from '../components/Layout';
 
 interface IProducts {
   products: IProduct[];
@@ -32,7 +32,7 @@ const Home: NextPage<IProducts> = ({ products }) => {
   const router: any = useRouter();
   const { state, dispatch } = useContext(Store);
 
-  const addToCartHandler = async (product: IProduct) => {
+  const addToCartHandler = async (product: IProduct): Promise<void> => {
     const existItem = state.cart.cartItems.find(
       (item: IProduct) => item._id === product._id,
     );
@@ -90,8 +90,6 @@ const Home: NextPage<IProducts> = ({ products }) => {
   );
 };
 export default Home;
-
-// export default dynamic(() => Promise.resolve(Home), { ssr: false });
 
 export async function getServerSideProps() {
   await db.connect();

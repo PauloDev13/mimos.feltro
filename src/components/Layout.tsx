@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -28,7 +28,6 @@ import { Store } from '../utils/Store';
 interface LayoutProps {
   title?: string;
   description?: string;
-  // children?: React.ReactNode;
 }
 
 const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
@@ -190,5 +189,5 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     </div>
   );
 };
-export default dynamic(() => Promise.resolve(Layout), {ssr: false});
-// export default Layout;
+// export default dynamic(() => Promise.resolve(Layout), {ssr: false});
+export default Layout;

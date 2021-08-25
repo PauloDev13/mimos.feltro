@@ -1,10 +1,12 @@
+// imports externos
 import React, { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import axios from 'axios';
-// import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
+import dynamic from 'next/dynamic';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useSnackbar } from 'notistack';
-
 import {
   Button,
   Card,
@@ -15,31 +17,28 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../utils/styles';
+// imports locais
 import { Store } from '../utils/Store';
+import useStyles from '../utils/styles';
 import { getError } from '../utils/error';
 import { IFormValues } from '../interfaces/IFormValues';
-
-import Layout from '../components/Layout';
 import action from '../components/ActionSnackbar';
-import NextLink from 'next/link';
-import Cookies from 'js-cookie';
+import Layout from '../components/Layout';
 
 const Profile = () => {
   const {
     handleSubmit,
     control,
     setValue,
-    formState: { errors },
+    formState: {errors},
   } = useForm<IFormValues>();
 
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const router: any = useRouter();
 
-  const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
+  const {state, dispatch} = useContext(Store);
+  const {userInfo} = state;
 
   useEffect(() => {
     if (!userInfo) {
@@ -47,15 +46,16 @@ const Profile = () => {
     }
     setValue('name', userInfo.name);
     setValue('email', userInfo.email);
-    // setValue('password', userInfo.password);
+
   }, [router, userInfo, setValue]);
 
-  const submitHandler = async ({
-    name,
-    email,
-    password,
-    confirmPassword,
-  }: IFormValues) => {
+  const submitHandler = async (
+    {
+      name,
+      email,
+      password,
+      confirmPassword,
+    }: IFormValues): Promise<void> => {
     if (password !== confirmPassword) {
       enqueueSnackbar('Senhas não conferem!', {
         variant: 'error',
@@ -65,7 +65,7 @@ const Profile = () => {
     }
 
     try {
-      const { data } = await axios.put(
+      const {data} = await axios.put(
         '/api/users/profile',
         {
           name,
@@ -73,11 +73,11 @@ const Profile = () => {
           password,
         },
         {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
+          headers: {authorization: `Bearer ${userInfo?.token}`},
         },
       );
 
-      dispatch({ type: 'USER_LOGIN', payload: data });
+      dispatch({type: 'USER_LOGIN', payload: data});
       Cookies.set('userInfo', JSON.stringify(data));
 
       enqueueSnackbar('Perfil atualizado com sucesso!', {
@@ -101,12 +101,12 @@ const Profile = () => {
             <List>
               <NextLink href={'/profile'}>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Perfil do usuário'} />
+                  <ListItemText primary={'Perfil do usuário'}/>
                 </ListItem>
               </NextLink>
               <NextLink href={'/order-history'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Histórico de pedidos'} />
+                  <ListItemText primary={'Histórico de pedidos'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -135,13 +135,13 @@ const Profile = () => {
                           required: true,
                           minLength: 6,
                         }}
-                        render={({ field }) => (
+                        render={({field}) => (
                           <TextField
                             variant={'outlined'}
                             fullWidth
                             id={'name'}
                             label={'Nome'}
-                            inputProps={{ type: 'text' }}
+                            inputProps={{type: 'text'}}
                             error={Boolean(errors.name)}
                             helperText={
                               errors.name
@@ -165,13 +165,13 @@ const Profile = () => {
                           required: true,
                           pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
                         }}
-                        render={({ field }) => (
+                        render={({field}) => (
                           <TextField
                             variant={'outlined'}
                             fullWidth
                             id={'email'}
                             label={'Email'}
-                            inputProps={{ type: 'email' }}
+                            inputProps={{type: 'email'}}
                             error={Boolean(errors.email)}
                             helperText={
                               errors.email
@@ -196,13 +196,13 @@ const Profile = () => {
                             value.length > 5 ||
                             'Senha deve conter 6 o mais caracteres!',
                         }}
-                        render={({ field }) => (
+                        render={({field}) => (
                           <TextField
                             variant={'outlined'}
                             fullWidth
                             id={'password'}
                             label={'Senha'}
-                            inputProps={{ type: 'password' }}
+                            inputProps={{type: 'password'}}
                             error={Boolean(errors.password)}
                             helperText={
                               errors.password
@@ -225,13 +225,13 @@ const Profile = () => {
                             String(value).length > 5 ||
                             'Confirmar a Senha deve conter 6 o mais caracteres!',
                         }}
-                        render={({ field }) => (
+                        render={({field}) => (
                           <TextField
                             variant={'outlined'}
                             fullWidth
                             id={'confirmPassword'}
                             label={'Confirma Senha'}
-                            inputProps={{ type: 'password' }}
+                            inputProps={{type: 'password'}}
                             error={Boolean(errors.confirmPassword)}
                             helperText={
                               errors.confirmPassword
@@ -263,5 +263,4 @@ const Profile = () => {
     </Layout>
   );
 };
-export default Profile;
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});let
+export default dynamic(() => Promise.resolve(Profile), {ssr: false});

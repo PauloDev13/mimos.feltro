@@ -1,10 +1,10 @@
-// import dynamic from 'next/dynamic';
+// imports externos
 import { useContext } from 'react';
-import axios from 'axios';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
-
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import {
   Button,
@@ -23,13 +23,12 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-
+// imports locais
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
 import { IProduct } from '../interfaces/IProduct';
-
-import Layout from '../components/Layout';
 import action from '../components/ActionSnackbar';
+import Layout from '../components/Layout';
 
 const CartScreen = () => {
   const {enqueueSnackbar} = useSnackbar();
@@ -40,9 +39,8 @@ const CartScreen = () => {
   const {
     cart: {cartItems},
   } = state;
-  // const {cartItems} = state.cart
 
-  const updateCartHandler = async (item: IProduct, quantity: Number) => {
+  const updateCartHandler = async (item: IProduct, quantity: Number): Promise<void> => {
     const {data} = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
       enqueueSnackbar('Desculpe. Produto sem estoque!', {
@@ -55,11 +53,11 @@ const CartScreen = () => {
     dispatch({type: 'CART_ADD_ITEM', payload: {...item, quantity}});
   };
 
-  const removeItemHandler = async (item: IProduct) => {
+  const removeItemHandler = async (item: IProduct): Promise<void> => {
     dispatch({type: 'CART_REMOVE_ITEM', payload: item});
   };
 
-  const checkoutHandler = async () => {
+  const checkoutHandler = async (): Promise<void> => {
     await router.push('/shipping');
   };
 
@@ -173,5 +171,5 @@ const CartScreen = () => {
     </Layout>
   );
 };
-export default CartScreen;
-// export default dynamic(() => Promise.resolve(CartScreen), {ssr: false});
+// export default CartScreen;
+export default dynamic(() => Promise.resolve(CartScreen), {ssr: false});

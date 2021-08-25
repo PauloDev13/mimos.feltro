@@ -1,6 +1,6 @@
+// imports externos
 import { Controller, useForm } from 'react-hook-form';
 import React, { useContext, useEffect } from 'react';
-// import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import {
@@ -10,32 +10,31 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../utils/styles';
+// imports locais
 import { Store } from '../utils/Store';
+import useStyles from '../utils/styles';
 import { IFormShippingValues } from '../interfaces/IFormShippingValues';
-
-import Layout from '../components/Layout';
 import CheckoutWizard from '../components/CheckoutWizard';
+import Layout from '../components/Layout';
 
 const Shipping = () => {
   const router: any = useRouter();
   const classes = useStyles();
-  const { state, dispatch } = useContext(Store);
+  const {state, dispatch} = useContext(Store);
 
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: {errors},
     setValue,
   } = useForm<IFormShippingValues>();
 
   const {
     userInfo,
-    cart: { shippingAddress },
+    cart: {shippingAddress},
   } = state;
 
-  const { fullName, address, city, country, postalCode }: IFormShippingValues =
+  const {fullName, address, city, country, postalCode}: IFormShippingValues =
     shippingAddress;
 
   useEffect(() => {
@@ -58,13 +57,13 @@ const Shipping = () => {
     postalCode,
   ]);
 
-  const submitHandler = ({
-    fullName,
-    address,
-    city,
-    postalCode,
-    country,
-  }: IFormShippingValues) => {
+  const submitHandler = (
+    {
+      fullName, address,
+      city,
+      postalCode,
+      country,
+    }: IFormShippingValues) => {
     const data: IFormShippingValues = {
       fullName,
       address,
@@ -84,7 +83,7 @@ const Shipping = () => {
 
   return (
     <Layout title={'Endereço para envio'}>
-      <CheckoutWizard activeStep={1} />
+      <CheckoutWizard activeStep={1}/>
       <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
         <Typography component={'h1'} variant={'h1'}>
           Endereço para envio
@@ -99,13 +98,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'fullName'}
                   label={'Nome Completo'}
-                  inputProps={{ type: 'text' }}
+                  inputProps={{type: 'text'}}
                   error={Boolean(errors.fullName)}
                   helperText={
                     errors.fullName
@@ -129,13 +128,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'address'}
                   label={'Endereço'}
-                  inputProps={{ type: 'text' }}
+                  inputProps={{type: 'text'}}
                   error={Boolean(errors.address)}
                   helperText={
                     errors.address
@@ -159,13 +158,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'city'}
                   label={'Cidade'}
-                  inputProps={{ type: 'text' }}
+                  inputProps={{type: 'text'}}
                   error={Boolean(errors.city)}
                   helperText={
                     errors.city
@@ -189,13 +188,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'postalCode'}
                   label={'CEP'}
-                  inputProps={{ type: 'text' }}
+                  inputProps={{type: 'text'}}
                   error={Boolean(errors.postalCode)}
                   helperText={
                     errors.postalCode
@@ -219,13 +218,13 @@ const Shipping = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'country'}
                   label={'Estado'}
-                  inputProps={{ type: 'text' }}
+                  inputProps={{type: 'text'}}
                   error={Boolean(errors.country)}
                   helperText={
                     errors.country
@@ -256,4 +255,3 @@ const Shipping = () => {
   );
 };
 export default Shipping;
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});

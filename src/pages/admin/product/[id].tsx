@@ -1,11 +1,11 @@
+// Imports externos
 import React, { useContext, useEffect, useReducer } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+import NextLink from 'next/link';
 import axios from 'axios';
-// import dynamic from 'next/dynamic';
 import { useSnackbar } from 'notistack';
-
 import {
   Button,
   Card,
@@ -17,19 +17,14 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../../../utils/styles';
+// Imports locais
 import { Store } from '../../../utils/Store';
+import useStyles from '../../../utils/styles';
 import { getError } from '../../../utils/error';
-
+import { IActionsProps } from '../../../interfaces/IActionsProps';
+import { IFormUpdateProducts } from '../../../interfaces/IFormValues';
 import action from '../../../components/ActionSnackbar';
 import Layout from '../../../components/Layout';
-import { IFormUpdateProducts } from '../../../interfaces/IFormValues';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
 
 interface StateProps {
   loading: boolean;
@@ -38,6 +33,76 @@ interface StateProps {
   error: string;
   errorUpdate: string;
   errorUpload: string;
+}
+
+function reducer(state: StateProps, action: IActionsProps): StateProps {
+  switch (action.type) {
+    case 'FETCH_REQUEST': {
+      return {
+        ...state,
+        loading: true,
+        error: '',
+      };
+    }
+    case 'FETCH_SUCCESS': {
+      return {
+        ...state,
+        loading: false,
+        error: '',
+      };
+    }
+    case 'FETCH_FAIL': {
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    }
+    case 'UPDATE_REQUEST': {
+      return {
+        ...state,
+        loadingUpdate: true,
+        errorUpdate: '',
+      };
+    }
+    case 'UPDATE_SUCCESS': {
+      return {
+        ...state,
+        loadingUpdate: false,
+        errorUpdate: '',
+      };
+    }
+    case 'UPDATE_FAIL': {
+      return {
+        ...state,
+        loadingUpdate: false,
+        errorUpdate: action.payload,
+      };
+    }
+    case 'UPLOAD_REQUEST': {
+      return {
+        ...state,
+        loadingUpload: true,
+        errorUpload: '',
+      };
+    }
+    case 'UPLOAD_SUCCESS': {
+      return {
+        ...state,
+        loadingUpload: false,
+        errorUpload: '',
+      };
+    }
+    case 'UPLOAD_FAIL': {
+      return {
+        ...state,
+        loadingUpload: false,
+        errorUpload: action.payload,
+      };
+    }
+    default:
+      return state;
+  }
 }
 
 const ProductEdit = ({params}: any) => {
@@ -63,81 +128,11 @@ const ProductEdit = ({params}: any) => {
     formState: {errors},
   } = useForm<IFormUpdateProducts>();
 
-  function reducer(state: StateProps, action: ActionProps): StateProps {
-    switch (action.type) {
-      case 'FETCH_REQUEST': {
-        return {
-          ...state,
-          loading: true,
-          error: '',
-        };
-      }
-      case 'FETCH_SUCCESS': {
-        return {
-          ...state,
-          loading: false,
-          error: '',
-        };
-      }
-      case 'FETCH_FAIL': {
-        return {
-          ...state,
-          loading: false,
-          error: action.payload,
-        };
-      }
-      case 'UPDATE_REQUEST': {
-        return {
-          ...state,
-          loadingUpdate: true,
-          errorUpdate: '',
-        };
-      }
-      case 'UPDATE_SUCCESS': {
-        return {
-          ...state,
-          loadingUpdate: false,
-          errorUpdate: '',
-        };
-      }
-      case 'UPDATE_FAIL': {
-        return {
-          ...state,
-          loadingUpdate: false,
-          errorUpdate: action.payload,
-        };
-      }
-      case 'UPLOAD_REQUEST': {
-        return {
-          ...state,
-          loadingUpload: true,
-          errorUpload: '',
-        };
-      }
-      case 'UPLOAD_SUCCESS': {
-        return {
-          ...state,
-          loadingUpload: false,
-          errorUpload: '',
-        };
-      }
-      case 'UPLOAD_FAIL': {
-        return {
-          ...state,
-          loadingUpload: false,
-          errorUpload: action.payload,
-        };
-      }
-      default:
-        return state;
-    }
-  }
-
   useEffect(() => {
     if (!userInfo) {
       return router.push('/');
     } else {
-      const fetchData = async () => {
+      const fetchData = async (): Promise<void> => {
         try {
           dispatch({type: 'FETCH_REQUEST'});
           const {data}: any = await axios.get(
@@ -168,10 +163,10 @@ const ProductEdit = ({params}: any) => {
     }
   }, [productId, router, setValue, userInfo]);
 
-  const uploadHandler = async (e: any) => {
-    const file = e.target.files[0]
-    let bodyFormData = new FormData()
-    bodyFormData.append('file', file)
+  const uploadHandler = async (e: any): Promise<void> => {
+    const file = e.target.files[0];
+    let bodyFormData = new FormData();
+    bodyFormData.append('file', file);
 
     try {
       dispatch({type: 'UPLOAD_REQUEST'});
@@ -181,10 +176,10 @@ const ProductEdit = ({params}: any) => {
           'Content-Type': 'multipart/form-data',
           authorization: `Bearer ${userInfo?.token}`,
         },
-      })
+      });
 
       dispatch({type: 'UPLOAD_SUCCESS'});
-      setValue('image', data.secure_url)
+      setValue('image', data.secure_url);
       enqueueSnackbar('Arquivo enviado com sucesso !', {
         variant: 'success',
         action
@@ -196,9 +191,9 @@ const ProductEdit = ({params}: any) => {
         action
       });
     }
-  }
+  };
 
-  const submitHandler = async (productUpdate: IFormUpdateProducts) => {
+  const submitHandler = async (productUpdate: IFormUpdateProducts): Promise<void> => {
     try {
       dispatch({type: 'UPDATE_REQUEST'});
       await axios.put(
@@ -484,11 +479,11 @@ const ProductEdit = ({params}: any) => {
     </Layout>
   );
 };
-export default ProductEdit;
 
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});let
 export function getServerSideProps({params}: any) {
   return {
     props: {params}
   };
 }
+
+export default dynamic(() => Promise.resolve(ProductEdit), {ssr: false});

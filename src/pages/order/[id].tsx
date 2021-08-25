@@ -1,12 +1,12 @@
+// imports externos
 import { useContext, useEffect, useReducer } from 'react';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
-
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { useSnackbar } from 'notistack';
-
 import {
   Button,
   Card,
@@ -23,19 +23,14 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-
+// imports locais
 import { Store } from '../../utils/Store';
 import useStyles from '../../utils/styles';
 import { getError } from '../../utils/error';
-
-import Layout from '../../components/Layout';
-import action from '../../components/ActionSnackbar';
+import { IActionsProps } from '../../interfaces/IActionsProps';
 import { InitialOrder, IOrder } from '../../interfaces/IOrder';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
+import action from '../../components/ActionSnackbar';
+import Layout from '../../components/Layout';
 
 interface StateProps {
   loading: boolean;
@@ -49,8 +44,7 @@ interface StateProps {
   errorDeliver: string;
 }
 
-// função reducer
-function reducer(state: StateProps, action: ActionProps): StateProps {
+function reducer(state: StateProps, action: IActionsProps): StateProps {
   switch (action.type) {
     case 'FETCH_REQUEST': {
       return {
@@ -137,18 +131,18 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
   }
 }
 
-const Order = ({ params }: any) => {
+const Order = ({params}: any) => {
   const orderId = params.id;
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const router: any = useRouter();
-  const { state } = useContext(Store);
-  const { userInfo } = state;
+  const {state} = useContext(Store);
+  const {userInfo} = state;
 
-  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+  const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
   const [
-    { loading, error, order, successPay, loadingDeliver, successDeliver },
+    {loading, error, order, successPay, loadingDeliver, successDeliver},
     dispatch,
   ] = useReducer(reducer, {
     loading: false,
@@ -183,20 +177,20 @@ const Order = ({ params }: any) => {
 
     const fetchOrder = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
+        dispatch({type: 'FETCH_REQUEST'});
 
-        const { data } = await axios.get(`/api/orders/${orderId}`, {
+        const {data} = await axios.get(`/api/orders/${orderId}`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
         console.log(
           'RESPOSTA DA PÁGINA PEDIDOS NO GET POR ID: ' + JSON.stringify(data),
         );
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
 
@@ -209,16 +203,16 @@ const Order = ({ params }: any) => {
       fetchOrder();
 
       if (successPay) {
-        dispatch({ type: 'PAY_RESET' });
+        dispatch({type: 'PAY_RESET'});
       }
 
       if (successDeliver) {
-        dispatch({ type: 'DELIVER_RESET' });
+        dispatch({type: 'DELIVER_RESET'});
       }
     } else {
       const loadPaypalScript = async () => {
-        const { data: clientId } = await axios.get('/api/keys/paypal', {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
+        const {data: clientId} = await axios.get('/api/keys/paypal', {
+          headers: {authorization: `Bearer ${userInfo?.token}`},
         });
         paypalDispatch({
           type: 'resetOptions',
@@ -228,7 +222,7 @@ const Order = ({ params }: any) => {
           },
         });
 
-        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+        paypalDispatch({type: 'setLoadingStatus', value: 'pending'});
       };
       loadPaypalScript();
     }
@@ -246,33 +240,33 @@ const Order = ({ params }: any) => {
 
   const createOrder = (data: any, actions: any) => {
     return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: { value: totalPrice },
-          },
-        ],
-      })
-      .then((orderID: any) => {
-        return orderID;
-      });
+    .create({
+      purchase_units: [
+        {
+          amount: {value: totalPrice},
+        },
+      ],
+    })
+    .then((orderID: any) => {
+      return orderID;
+    });
   };
 
   const onApprove = (data: any, actions: any) => {
     return actions.order.capture().then(async function (details: any) {
       try {
-        dispatch({ type: 'PAY_REQUEST' });
+        dispatch({type: 'PAY_REQUEST'});
         // @ts-ignore
-        const { data } = await axios.put(
+        const {data} = await axios.put(
           `/api/orders/${order._id}/pay`,
           details,
           {
-            headers: { authorization: `Bearer ${userInfo?.token}` },
+            headers: {authorization: `Bearer ${userInfo?.token}`},
           },
         );
-        dispatch({ type: 'PAY_SUCCESS', payload: data });
+        dispatch({type: 'PAY_SUCCESS', payload: data});
       } catch (err) {
-        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        dispatch({type: 'PAY_FAIL', payload: getError(err)});
         enqueueSnackbar(getError(err), {
           variant: 'error',
           action,
@@ -290,23 +284,23 @@ const Order = ({ params }: any) => {
 
   const deliverOderHandler = async () => {
     try {
-      dispatch({ type: 'DELIVER_REQUEST' });
+      dispatch({type: 'DELIVER_REQUEST'});
       // @ts-ignore
-      const { data } = await axios.put(
+      const {data} = await axios.put(
         `/api/orders/${order._id}/deliver`,
         {},
         {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
+          headers: {authorization: `Bearer ${userInfo?.token}`},
         },
       );
 
-      dispatch({ type: 'DELIVER_SUCCESS', payload: data });
+      dispatch({type: 'DELIVER_SUCCESS', payload: data});
       enqueueSnackbar('Pedido foi enviado', {
         variant: 'success',
         action,
       });
     } catch (err) {
-      dispatch({ type: 'DELIVER_FAIL', payload: getError(err) });
+      dispatch({type: 'DELIVER_FAIL', payload: getError(err)});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -320,7 +314,7 @@ const Order = ({ params }: any) => {
         Pedido ID: {orderId}
       </Typography>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress/>
       ) : error ? (
         <Typography className={classes.error}>{error}</Typography>
       ) : (
@@ -501,7 +495,7 @@ const Order = ({ params }: any) => {
                 {!isPaid && (
                   <ListItem>
                     {isPending ? (
-                      <CircularProgress />
+                      <CircularProgress/>
                     ) : (
                       <div className={classes.fullWidth}>
                         <PayPalButtons
@@ -515,7 +509,7 @@ const Order = ({ params }: any) => {
                 )}
                 {userInfo?.isAdmin && order.isPaid && !order.isDelivered && (
                   <ListItem>
-                    {loadingDeliver && <CircularProgress />}
+                    {loadingDeliver && <CircularProgress/>}
                     <Button
                       onClick={deliverOderHandler}
                       fullWidth
@@ -541,5 +535,4 @@ export async function getServerSideProps({params}: any) {
   };
 }
 
-export default Order;
-// export default dynamic(() => Promise.resolve(Order), {ssr: false});
+export default dynamic(() => Promise.resolve(Order), {ssr: false});

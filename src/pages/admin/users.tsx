@@ -1,9 +1,10 @@
+// imports externos
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
-import { useSnackbar } from 'notistack';
 import axios from 'axios';
-
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Card,
@@ -20,17 +21,13 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
+// imports locais
 import { Store } from '../../utils/Store';
-import { getError } from '../../utils/error';
 import useStyles from '../../utils/styles';
-
-import Layout from '../../components/Layout';
+import { getError } from '../../utils/error';
+import { IActionsProps } from '../../interfaces/IActionsProps';
 import action from '../../components/ActionSnackbar';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
+import Layout from '../../components/Layout';
 
 interface StateProps {
   loading: boolean;
@@ -47,7 +44,7 @@ interface ISummaryUsers {
   isAdmin: boolean;
 }
 
-function reducer(state: StateProps, action: ActionProps): StateProps {
+function reducer(state: StateProps, action: IActionsProps): StateProps {
   switch (action.type) {
     case 'FETCH_REQUEST': {
       return {
@@ -104,8 +101,8 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 
 const AdminUser = () => {
   const router: any = useRouter();
-  const { state } = useContext(Store);
-  const [{ loading, users, error, loadingDelete, successDelete }, dispatch] =
+  const {state} = useContext(Store);
+  const [{loading, users, error, loadingDelete, successDelete}, dispatch] =
     useReducer(reducer, {
       loading: false,
       loadingDelete: false,
@@ -114,9 +111,9 @@ const AdminUser = () => {
       error: '',
     });
 
-  const { userInfo } = state;
+  const {userInfo} = state;
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const deleteHandler = async (userId: string) => {
     if (!window.confirm('Excluir usuário?')) {
@@ -124,20 +121,20 @@ const AdminUser = () => {
     }
 
     try {
-      dispatch({ type: 'DELETE_REQUEST' });
+      dispatch({type: 'DELETE_REQUEST'});
       await axios.delete(`/api/admin/users/${userId}`, {
         headers: {
           authorization: `Bearer ${userInfo?.token}`,
         },
       });
 
-      dispatch({ type: 'DELETE_SUCCESS' });
+      dispatch({type: 'DELETE_SUCCESS'});
       enqueueSnackbar('Usuário excluído com sucesso', {
         variant: 'success',
         action,
       });
     } catch (err) {
-      dispatch({ type: 'DELETE_FAIL' });
+      dispatch({type: 'DELETE_FAIL'});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -152,20 +149,20 @@ const AdminUser = () => {
 
     const fetchData = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/admin/users`, {
+        dispatch({type: 'FETCH_REQUEST'});
+        const {data} = await axios.get(`/api/admin/users`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
     if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
+      dispatch({type: 'DELETE_RESET'});
     } else {
       fetchData();
     }
@@ -179,25 +176,25 @@ const AdminUser = () => {
             <List>
               <NextLink href={'/admin/dashboard'}>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Admin Dashboard'} />
+                  <ListItemText primary={'Admin Dashboard'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Pedidos'} />
+                  <ListItemText primary={'Pedidos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Produtos'} />
+                  <ListItemText primary={'Produtos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/users'} passHref>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Usuários'} />
+                  <ListItemText primary={'Usuários'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -213,13 +210,13 @@ const AdminUser = () => {
                     <Typography component={'h1'} variant={'h1'}>
                       Usuários
                     </Typography>
-                    {loadingDelete && <CircularProgress />}
+                    {loadingDelete && <CircularProgress/>}
                   </Grid>
                 </Grid>
               </ListItem>
               <ListItem>
                 {loading ? (
-                  <CircularProgress />
+                  <CircularProgress/>
                 ) : error ? (
                   <Typography className={classes.error}>{error}</Typography>
                 ) : (
@@ -275,4 +272,4 @@ const AdminUser = () => {
     </Layout>
   );
 };
-export default AdminUser;
+export default dynamic(() => Promise.resolve(AdminUser), {ssr: false});

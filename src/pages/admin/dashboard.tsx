@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import axios from 'axios';
-
+import { Bar } from 'react-chartjs-2';
 import {
   Button,
   Card,
@@ -15,17 +16,12 @@ import {
   ListItemText,
   Typography,
 } from '@material-ui/core';
+// imports locais
 import { Store } from '../../utils/Store';
-import { getError } from '../../utils/error';
 import useStyles from '../../utils/styles';
-
+import { getError } from '../../utils/error';
+import { IActionsProps } from '../../interfaces/IActionsProps';
 import Layout from '../../components/Layout';
-import { Bar } from 'react-chartjs-2';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
 
 interface StateProps {
   loading: boolean;
@@ -33,7 +29,7 @@ interface StateProps {
   error: string;
 }
 
-function reducer(state: StateProps, action: ActionProps): StateProps {
+function reducer(state: StateProps, action: IActionsProps): StateProps {
   switch (action.type) {
     case 'FETCH_REQUEST': {
       return {
@@ -242,4 +238,4 @@ const AdminDashboard = () => {
     </Layout>
   );
 };
-export default AdminDashboard;
+export default dynamic(() => Promise.resolve(AdminDashboard), {ssr: false});

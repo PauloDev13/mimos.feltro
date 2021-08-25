@@ -1,11 +1,11 @@
+// Imports externos
 import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+import NextLink from 'next/link';
 import axios from 'axios';
-// import dynamic from 'next/dynamic';
 import { useSnackbar } from 'notistack';
-
 import {
   Button,
   Card,
@@ -19,18 +19,13 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../../../utils/styles';
+// Imports locais
 import { Store } from '../../../utils/Store';
+import useStyles from '../../../utils/styles';
 import { getError } from '../../../utils/error';
-
 import action from '../../../components/ActionSnackbar';
 import Layout from '../../../components/Layout';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
+import { IActionsProps } from '../../../interfaces/IActionsProps';
 
 interface StateProps {
   loading: boolean;
@@ -44,14 +39,63 @@ interface IFormUpdateUser {
   isAdmin: boolean;
 }
 
-const UserEdit = ({ params }: any) => {
-  const userId = params.id;
-  const { enqueueSnackbar } = useSnackbar();
-  const router: any = useRouter();
-  const { state } = useContext(Store);
-  const { userInfo } = state;
+function reducer(state: StateProps, action: IActionsProps): StateProps {
+  switch (action.type) {
+    case 'FETCH_REQUEST': {
+      return {
+        ...state,
+        loading: true,
+        error: '',
+      };
+    }
+    case 'FETCH_SUCCESS': {
+      return {
+        ...state,
+        loading: false,
+        error: '',
+      };
+    }
+    case 'FETCH_FAIL': {
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    }
+    case 'UPDATE_REQUEST': {
+      return {
+        ...state,
+        loadingUpdate: true,
+        errorUpdate: '',
+      };
+    }
+    case 'UPDATE_SUCCESS': {
+      return {
+        ...state,
+        loadingUpdate: false,
+        errorUpdate: '',
+      };
+    }
+    case 'UPDATE_FAIL': {
+      return {
+        ...state,
+        loadingUpdate: false,
+        errorUpdate: action.payload,
+      };
+    }
+    default:
+      return state;
+  }
+}
 
-  const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
+const UserEdit = ({params}: any) => {
+  const userId = params.id;
+  const {enqueueSnackbar} = useSnackbar();
+  const router: any = useRouter();
+  const {state} = useContext(Store);
+  const {userInfo} = state;
+
+  const [{loading, error, loadingUpdate}, dispatch] = useReducer(reducer, {
     loading: false,
     loadingUpdate: false,
     error: '',
@@ -62,57 +106,8 @@ const UserEdit = ({ params }: any) => {
     handleSubmit,
     control,
     setValue,
-    formState: { errors },
+    formState: {errors},
   } = useForm<IFormUpdateUser>();
-
-  function reducer(state: StateProps, action: ActionProps): StateProps {
-    switch (action.type) {
-      case 'FETCH_REQUEST': {
-        return {
-          ...state,
-          loading: true,
-          error: '',
-        };
-      }
-      case 'FETCH_SUCCESS': {
-        return {
-          ...state,
-          loading: false,
-          error: '',
-        };
-      }
-      case 'FETCH_FAIL': {
-        return {
-          ...state,
-          loading: false,
-          error: action.payload,
-        };
-      }
-      case 'UPDATE_REQUEST': {
-        return {
-          ...state,
-          loadingUpdate: true,
-          errorUpdate: '',
-        };
-      }
-      case 'UPDATE_SUCCESS': {
-        return {
-          ...state,
-          loadingUpdate: false,
-          errorUpdate: '',
-        };
-      }
-      case 'UPDATE_FAIL': {
-        return {
-          ...state,
-          loadingUpdate: false,
-          errorUpdate: action.payload,
-        };
-      }
-      default:
-        return state;
-    }
-  }
 
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -122,17 +117,17 @@ const UserEdit = ({ params }: any) => {
     } else {
       const fetchData = async () => {
         try {
-          dispatch({ type: 'FETCH_REQUEST' });
-          const { data }: any = await axios.get(`/api/admin/users/${userId}`, {
+          dispatch({type: 'FETCH_REQUEST'});
+          const {data}: any = await axios.get(`/api/admin/users/${userId}`, {
             headers: {
               authorization: `Bearer ${userInfo?.token}`,
             },
           });
           setIsAdmin(data.isAdmin);
-          dispatch({ type: 'FETCH_SUCCESS' });
+          dispatch({type: 'FETCH_SUCCESS'});
           setValue('name', data.name);
         } catch (err) {
-          dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+          dispatch({type: 'FETCH_FAIL', payload: getError(err)});
         }
       };
 
@@ -140,10 +135,10 @@ const UserEdit = ({ params }: any) => {
     }
   }, [userId, router, setValue, userInfo]);
 
-  const submitHandler = async (userUpdate: IFormUpdateUser) => {
-    const { name } = userUpdate;
+  const submitHandler = async (userUpdate: IFormUpdateUser): Promise<void> => {
+    const {name} = userUpdate;
     try {
-      dispatch({ type: 'UPDATE_REQUEST' });
+      dispatch({type: 'UPDATE_REQUEST'});
       await axios.put(
         `/api/admin/users/${userId}`,
         {
@@ -151,11 +146,11 @@ const UserEdit = ({ params }: any) => {
           isAdmin,
         },
         {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
+          headers: {authorization: `Bearer ${userInfo?.token}`},
         },
       );
 
-      dispatch({ type: 'UPDATE_SUCCESS' });
+      dispatch({type: 'UPDATE_SUCCESS'});
 
       enqueueSnackbar('Usuário atualizado com sucesso!', {
         variant: 'success',
@@ -164,7 +159,7 @@ const UserEdit = ({ params }: any) => {
 
       router.push('/admin/users');
     } catch (err) {
-      dispatch({ type: 'UPDATE_FAIL' });
+      dispatch({type: 'UPDATE_FAIL'});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -181,25 +176,25 @@ const UserEdit = ({ params }: any) => {
             <List>
               <NextLink href={'/admin/dashboard'}>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Admin Dashboard'} />
+                  <ListItemText primary={'Admin Dashboard'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Pedidos'} />
+                  <ListItemText primary={'Pedidos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Produtos'} />
+                  <ListItemText primary={'Produtos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/users'} passHref>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Usuários'} />
+                  <ListItemText primary={'Usuários'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -214,7 +209,7 @@ const UserEdit = ({ params }: any) => {
                 </Typography>
               </ListItem>
               <ListItem>
-                {loading && <CircularProgress />}
+                {loading && <CircularProgress/>}
                 {error && (
                   <Typography className={classes.error}>{error}</Typography>
                 )}
@@ -229,8 +224,8 @@ const UserEdit = ({ params }: any) => {
                           name={'name'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               disabled
                               variant={'outlined'}
@@ -269,7 +264,7 @@ const UserEdit = ({ params }: any) => {
                         >
                           Atualizar
                         </Button>
-                        {loadingUpdate && <CircularProgress />}
+                        {loadingUpdate && <CircularProgress/>}
                       </ListItem>
                     </List>
                   </form>
@@ -282,9 +277,8 @@ const UserEdit = ({ params }: any) => {
     </Layout>
   );
 };
-export default UserEdit;
+export default dynamic(() => Promise.resolve(UserEdit), {ssr: false});
 
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});let
 export function getServerSideProps({params}: any) {
   return {
     props: {params}

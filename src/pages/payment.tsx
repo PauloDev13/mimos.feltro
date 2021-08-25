@@ -1,8 +1,8 @@
+// imports externos
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import Cookies from 'js-cookie';
-
 import {
   Button,
   FormControl,
@@ -13,22 +13,21 @@ import {
   RadioGroup,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../utils/styles';
+// imports locais
 import { Store } from '../utils/Store';
-
-import Layout from '../components/Layout';
+import useStyles from '../utils/styles';
 import CheckoutWizard from '../components/CheckoutWizard';
 import action from '../components/ActionSnackbar';
+import Layout from '../components/Layout';
 
 const Payment = () => {
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
   const router: any = useRouter();
 
-  const { state, dispatch } = useContext(Store);
+  const {state, dispatch} = useContext(Store);
   const {
-    cart: { shippingAddress },
+    cart: {shippingAddress},
   } = state;
 
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -41,7 +40,7 @@ const Payment = () => {
         action,
       });
     } else {
-      dispatch({ type: 'SAVE_PAYMENT_METHOD', payload: paymentMethod });
+      dispatch({type: 'SAVE_PAYMENT_METHOD', payload: paymentMethod});
       Cookies.set('paymentMethod', paymentMethod);
       router.push('/placeorder');
     }
@@ -57,8 +56,7 @@ const Payment = () => {
 
   return (
     <Layout title={'Forma de pagamento'}>
-      <CheckoutWizard activeStep={2} />
-
+      <CheckoutWizard activeStep={2}/>
       <form className={classes.form} onSubmit={submitHandler}>
         <Typography component={'h1'} variant={'h1'}>
           Forma de pagamento
@@ -75,17 +73,17 @@ const Payment = () => {
                 <FormControlLabel
                   label={'PayPal'}
                   value={'PayPal'}
-                  control={<Radio />}
+                  control={<Radio/>}
                 />
                 <FormControlLabel
                   label={'Parcelado'}
                   value={'Parcelado'}
-                  control={<Radio />}
+                  control={<Radio/>}
                 />
                 <FormControlLabel
                   label={'Dinheiro'}
                   value={'Em dinheiro'}
-                  control={<Radio />}
+                  control={<Radio/>}
                 />
               </RadioGroup>
             </FormControl>

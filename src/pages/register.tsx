@@ -1,12 +1,11 @@
+// imports externos
 import React, { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import axios from 'axios';
-import NextLink from 'next/link';
-// import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useSnackbar } from 'notistack';
+import NextLink from 'next/link';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-
+import { useSnackbar } from 'notistack';
 import {
   Button,
   Link,
@@ -15,29 +14,28 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../utils/styles';
+// imports locais
 import { Store } from '../utils/Store';
+import useStyles from '../utils/styles';
 import { getError } from '../utils/error';
 import { IFormValues } from '../interfaces/IFormValues';
-
-import Layout from '../components/Layout';
 import action from '../components/ActionSnackbar';
+import Layout from '../components/Layout';
 
 const Register = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: {errors},
   } = useForm<IFormValues>();
 
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   const router: any = useRouter();
-  const { redirect } = router.query;
+  const {redirect} = router.query;
 
-  const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
+  const {state, dispatch} = useContext(Store);
+  const {userInfo} = state;
 
   useEffect(() => {
     if (userInfo) {
@@ -45,12 +43,13 @@ const Register = () => {
     }
   }, [router, userInfo]);
 
-  const submitHandler = async ({
-    name,
-    email,
-    password,
-    confirmPassword,
-  }: IFormValues) => {
+  const submitHandler = async (
+    {
+      name,
+      email,
+      password,
+      confirmPassword,
+    }: IFormValues): Promise<void> => {
     if (password !== confirmPassword) {
       enqueueSnackbar('Senhas não conferem!', {
         variant: 'error',
@@ -60,13 +59,13 @@ const Register = () => {
     }
 
     try {
-      const { data } = await axios.post('/api/users/register', {
+      const {data} = await axios.post('/api/users/register', {
         name,
         email,
         password,
       });
 
-      dispatch({ type: 'USER_LOGIN', payload: data });
+      dispatch({type: 'USER_LOGIN', payload: data});
       Cookies.set('userInfo', JSON.stringify(data));
 
       await router.push(redirect || '/');
@@ -95,13 +94,13 @@ const Register = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'name'}
                   label={'Nome'}
-                  inputProps={{ type: 'name' }}
+                  inputProps={{type: 'name'}}
                   error={Boolean(errors.name)}
                   helperText={
                     errors.name
@@ -125,13 +124,13 @@ const Register = () => {
                 required: true,
                 pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'email'}
                   label={'Email'}
-                  inputProps={{ type: 'email' }}
+                  inputProps={{type: 'email'}}
                   error={Boolean(errors.email)}
                   helperText={
                     errors.email
@@ -154,13 +153,13 @@ const Register = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'password'}
                   label={'Senha'}
-                  inputProps={{ type: 'password' }}
+                  inputProps={{type: 'password'}}
                   error={Boolean(errors.password)}
                   helperText={
                     errors.password
@@ -183,13 +182,13 @@ const Register = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'confirmPassword'}
                   label={'Confirma Senha'}
-                  inputProps={{ type: 'password' }}
+                  inputProps={{type: 'password'}}
                   error={Boolean(errors.confirmPassword)}
                   helperText={
                     errors.confirmPassword
@@ -225,4 +224,3 @@ const Register = () => {
   );
 };
 export default Register;
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});

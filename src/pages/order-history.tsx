@@ -1,8 +1,9 @@
+// imports externos
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import axios from 'axios';
-
 import {
   Button,
   Card,
@@ -20,18 +21,13 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
-
-import { IOrder } from '../interfaces/IOrder';
+// imports locais
 import { Store } from '../utils/Store';
 import { getError } from '../utils/error';
 import useStyles from '../utils/styles';
-
+import { IOrder } from '../interfaces/IOrder';
+import { IActionsProps } from '../interfaces/IActionsProps';
 import Layout from '../components/Layout';
-
-interface ActionProps {
-  type: string;
-  payload?: any;
-}
 
 interface StateProps {
   loading: boolean;
@@ -39,7 +35,7 @@ interface StateProps {
   error: string;
 }
 
-function reducer(state: StateProps, action: ActionProps): StateProps {
+function reducer(state: StateProps, action: IActionsProps): StateProps {
   switch (action.type) {
     case 'FETCH_REQUEST': {
       return {
@@ -71,14 +67,14 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 
 const OrderHistory = () => {
   const router: any = useRouter();
-  const { state } = useContext(Store);
-  const [{ loading, orders, error }, dispatch] = useReducer(reducer, {
+  const {state} = useContext(Store);
+  const [{loading, orders, error}, dispatch] = useReducer(reducer, {
     loading: true,
     orders: [],
     error: '',
   });
 
-  const { userInfo } = state;
+  const {userInfo} = state;
   const classes = useStyles();
 
   useEffect(() => {
@@ -86,21 +82,21 @@ const OrderHistory = () => {
       router.push('/login');
     }
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (): Promise<void> => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/orders/history`, {
+        dispatch({type: 'FETCH_REQUEST'});
+        const {data} = await axios.get(`/api/orders/history`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
         console.log('PÁGINA HISTORY' + JSON.stringify(orders));
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
-    fetchOrders().then();
+    fetchOrders();
   }, [userInfo, router, orders]);
 
   return (
@@ -110,12 +106,12 @@ const OrderHistory = () => {
           <Card className={classes.section}>
             <NextLink href={'/profile'}>
               <ListItem button component={'a'}>
-                <ListItemText primary={'Perfil do usuário'} />
+                <ListItemText primary={'Perfil do usuário'}/>
               </ListItem>
             </NextLink>
             <NextLink href={'/order-history'} passHref>
               <ListItem selected button component={'a'}>
-                <ListItemText primary={'Histórico de pedidos'} />
+                <ListItemText primary={'Histórico de pedidos'}/>
               </ListItem>
             </NextLink>
           </Card>
@@ -131,7 +127,7 @@ const OrderHistory = () => {
               </ListItem>
               <ListItem>
                 {loading ? (
-                  <CircularProgress />
+                  <CircularProgress/>
                 ) : error ? (
                   <Typography className={classes.error}>{error}</Typography>
                 ) : (
@@ -195,4 +191,4 @@ const OrderHistory = () => {
     </Layout>
   );
 };
-export default OrderHistory;
+export default dynamic(() => Promise.resolve(OrderHistory), {ssr: false});

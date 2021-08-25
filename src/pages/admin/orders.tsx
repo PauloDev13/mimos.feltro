@@ -1,8 +1,9 @@
+// imports externos
 import React, { useContext, useEffect, useReducer } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import axios from 'axios';
-
 import {
   Button,
   Card,
@@ -19,10 +20,10 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
+// imports locais
 import { Store } from '../../utils/Store';
-import { getError } from '../../utils/error';
 import useStyles from '../../utils/styles';
-
+import { getError } from '../../utils/error';
 import Layout from '../../components/Layout';
 
 interface ActionProps {
@@ -77,15 +78,15 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 }
 
 const AdminOrder = () => {
-  const { state } = useContext(Store);
+  const {state} = useContext(Store);
   const router: any = useRouter();
-  const [{ loading, orders, error }, dispatch] = useReducer(reducer, {
+  const [{loading, orders, error}, dispatch] = useReducer(reducer, {
     loading: true,
     orders: [],
     error: '',
   });
 
-  const { userInfo } = state;
+  const {userInfo} = state;
   const classes = useStyles();
 
   useEffect(() => {
@@ -95,16 +96,16 @@ const AdminOrder = () => {
 
     const fetchData = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/admin/orders`, {
+        dispatch({type: 'FETCH_REQUEST'});
+        const {data} = await axios.get(`/api/admin/orders`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
     fetchData();
@@ -118,25 +119,25 @@ const AdminOrder = () => {
             <List>
               <NextLink href={'/admin/dashboard'}>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Admin Dashboard'} />
+                  <ListItemText primary={'Admin Dashboard'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Pedidos'} />
+                  <ListItemText primary={'Pedidos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Produtos'} />
+                  <ListItemText primary={'Produtos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/users'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Usuários'} />
+                  <ListItemText primary={'Usuários'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -153,7 +154,7 @@ const AdminOrder = () => {
               </ListItem>
               <ListItem>
                 {loading ? (
-                  <CircularProgress />
+                  <CircularProgress/>
                 ) : error ? (
                   <Typography className={classes.error}>{error}</Typography>
                 ) : (
@@ -214,4 +215,4 @@ const AdminOrder = () => {
     </Layout>
   );
 };
-export default AdminOrder;
+export default dynamic(() => Promise.resolve(AdminOrder), {ssr: false});

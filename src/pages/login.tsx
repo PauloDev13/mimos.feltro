@@ -1,13 +1,11 @@
+// imports externos
 import React, { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import axios from 'axios';
-import NextLink from 'next/link';
-// import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-
+import NextLink from 'next/link';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import Cookies from 'js-cookie';
-
 import {
   Button,
   Link,
@@ -16,14 +14,13 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-
-import useStyles from '../utils/styles';
+// imports locais
 import { Store } from '../utils/Store';
+import useStyles from '../utils/styles';
 import { getError } from '../utils/error';
 import { IFormValues } from '../interfaces/IFormValues';
-
-import Layout from '../components/Layout';
 import action from '../components/ActionSnackbar';
+import Layout from '../components/Layout';
 
 const Login = () => {
   const router: any = useRouter();
@@ -31,15 +28,15 @@ const Login = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: {errors},
   } = useForm<IFormValues>();
 
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
-  const { state, dispatch } = useContext(Store);
-  const { redirect } = router.query;
+  const {state, dispatch} = useContext(Store);
+  const {redirect} = router.query;
 
-  const { userInfo } = state;
+  const {userInfo} = state;
 
   useEffect(() => {
     if (userInfo) {
@@ -47,14 +44,14 @@ const Login = () => {
     }
   }, [router, userInfo, redirect]);
 
-  const submitHandler = async ({ email, password }: IFormValues) => {
+  const submitHandler = async ({email, password}: IFormValues): Promise<void> => {
     try {
-      const { data } = await axios.post('/api/users/login', {
+      const {data} = await axios.post('/api/users/login', {
         email,
         password,
       });
 
-      dispatch({ type: 'USER_LOGIN', payload: data });
+      dispatch({type: 'USER_LOGIN', payload: data});
       Cookies.set('userInfo', JSON.stringify(data));
 
       await router.push(redirect || '/');
@@ -83,13 +80,13 @@ const Login = () => {
                 required: true,
                 pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'email'}
                   label={'Email'}
-                  inputProps={{ type: 'email' }}
+                  inputProps={{type: 'email'}}
                   error={Boolean(errors.email)}
                   helperText={
                     errors.email
@@ -112,13 +109,13 @@ const Login = () => {
                 required: true,
                 minLength: 6,
               }}
-              render={({ field }) => (
+              render={({field}) => (
                 <TextField
                   variant={'outlined'}
                   fullWidth
                   id={'password'}
                   label={'Senha'}
-                  inputProps={{ type: 'password' }}
+                  inputProps={{type: 'password'}}
                   error={Boolean(errors.password)}
                   helperText={
                     errors.password
@@ -154,4 +151,3 @@ const Login = () => {
   );
 };
 export default Login;
-// export default dynamic(() => Promise.resolve(Login), {ssr: false});

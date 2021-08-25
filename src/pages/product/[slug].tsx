@@ -1,10 +1,10 @@
-// import dynamic from 'next/dynamic';
-import { useContext } from 'react';
+// imports externos
+import { ReactElement, useContext } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
-
 import { useSnackbar } from 'notistack';
 import {
   Button,
@@ -15,23 +15,20 @@ import {
   ListItem,
   Typography,
 } from '@material-ui/core';
-
-import action from '../../components/ActionSnackbar';
-
-import useStyles from '../../utils/styles';
-import db from '../../utils/db';
+// imports locais
 import { Store } from '../../utils/Store';
-
+import db from '../../utils/db';
+import useStyles from '../../utils/styles';
 import { IProduct } from '../../interfaces/IProduct';
 import Product from '../../model/Product';
-
+import action from '../../components/ActionSnackbar';
 import Layout from '../../components/Layout';
 
 interface ProductScreenProps {
   product: IProduct;
 }
 
-function ProductScreen(props: ProductScreenProps) {
+function ProductScreen(props: ProductScreenProps): ReactElement {
   const {enqueueSnackbar} = useSnackbar();
   const router: any = useRouter();
   const {state, dispatch} = useContext(Store);
@@ -42,7 +39,7 @@ function ProductScreen(props: ProductScreenProps) {
     return <div>Product Not Found</div>;
   }
 
-  const addToCartHandler = async () => {
+  const addToCartHandler = async (): Promise<void> => {
     const existItem = state.cart.cartItems.find(
       (item: IProduct) => item._id === product._id,
     );
@@ -147,9 +144,6 @@ function ProductScreen(props: ProductScreenProps) {
   );
 }
 
-export default ProductScreen;
-
-//export default dynamic(() => Promise.resolve(ProductScreen), { ssr: false });
 
 export async function getServerSideProps(context: any) {
   const {params} = context;
@@ -164,3 +158,5 @@ export async function getServerSideProps(context: any) {
     },
   };
 }
+
+export default dynamic(() => Promise.resolve(ProductScreen), {ssr: false});
