@@ -22,8 +22,8 @@ import useStyles from '../../../utils/styles';
 import { Store } from '../../../utils/Store';
 import { getError } from '../../../utils/error';
 
-import Layout from '../../../components/Layout';
 import action from '../../../components/ActionSnackbar';
+import Layout from '../../../components/Layout';
 import { IFormUpdateProducts } from '../../../interfaces/IFormValues';
 
 interface ActionProps {
@@ -34,29 +34,33 @@ interface ActionProps {
 interface StateProps {
   loading: boolean;
   loadingUpdate: boolean;
+  loadingUpload: boolean;
   error: string;
   errorUpdate: string;
+  errorUpload: string;
 }
 
-const ProductEdit = ({ params }: any) => {
+const ProductEdit = ({params}: any) => {
   const productId = params.id;
-  const { enqueueSnackbar } = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
   const router: any = useRouter();
-  const { state } = useContext(Store);
-  const { userInfo } = state;
+  const {state} = useContext(Store);
+  const {userInfo} = state;
 
-  const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
-    loading: true,
+  const [{loading, error, loadingUpdate, loadingUpload}, dispatch] = useReducer(reducer, {
+    loading: false,
     loadingUpdate: false,
+    loadingUpload: false,
     error: '',
     errorUpdate: '',
+    errorUpload: ''
   });
 
   const {
     handleSubmit,
     control,
     setValue,
-    formState: { errors },
+    formState: {errors},
   } = useForm<IFormUpdateProducts>();
 
   function reducer(state: StateProps, action: ActionProps): StateProps {
@@ -103,6 +107,27 @@ const ProductEdit = ({ params }: any) => {
           errorUpdate: action.payload,
         };
       }
+      case 'UPLOAD_REQUEST': {
+        return {
+          ...state,
+          loadingUpload: true,
+          errorUpload: '',
+        };
+      }
+      case 'UPLOAD_SUCCESS': {
+        return {
+          ...state,
+          loadingUpload: false,
+          errorUpload: '',
+        };
+      }
+      case 'UPLOAD_FAIL': {
+        return {
+          ...state,
+          loadingUpload: false,
+          errorUpload: action.payload,
+        };
+      }
       default:
         return state;
     }
@@ -114,8 +139,8 @@ const ProductEdit = ({ params }: any) => {
     } else {
       const fetchData = async () => {
         try {
-          dispatch({ type: 'FETCH_REQUEST' });
-          const { data }: any = await axios.get(
+          dispatch({type: 'FETCH_REQUEST'});
+          const {data}: any = await axios.get(
             `/api/admin/products/${productId}`,
             {
               headers: {
@@ -124,7 +149,7 @@ const ProductEdit = ({ params }: any) => {
             },
           );
 
-          dispatch({ type: 'FETCH_SUCCESS' });
+          dispatch({type: 'FETCH_SUCCESS'});
 
           setValue('name', data.name);
           setValue('slug', data.slug);
@@ -135,7 +160,7 @@ const ProductEdit = ({ params }: any) => {
           setValue('countInStock', data.countInStock);
           setValue('description', data.description);
         } catch (err) {
-          dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+          dispatch({type: 'FETCH_FAIL', payload: getError(err)});
         }
       };
 
@@ -143,20 +168,50 @@ const ProductEdit = ({ params }: any) => {
     }
   }, [productId, router, setValue, userInfo]);
 
+  const uploadHandler = async (e: any) => {
+    const file = e.target.files[0]
+    let bodyFormData = new FormData()
+    bodyFormData.append('file', file)
+
+    try {
+      dispatch({type: 'UPLOAD_REQUEST'});
+
+      const {data} = await axios.post('/api/admin/upload', bodyFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          authorization: `Bearer ${userInfo?.token}`,
+        },
+      })
+
+      dispatch({type: 'UPLOAD_SUCCESS'});
+      setValue('image', data.secure_url)
+      enqueueSnackbar('Arquivo enviado com sucesso !', {
+        variant: 'success',
+        action
+      });
+    } catch (err) {
+      dispatch({type: 'UPLOAD_FAIL', payload: getError(err)});
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action
+      });
+    }
+  }
+
   const submitHandler = async (productUpdate: IFormUpdateProducts) => {
     try {
-      dispatch({ type: 'UPDATE_REQUEST' });
+      dispatch({type: 'UPDATE_REQUEST'});
       await axios.put(
         `/api/admin/products/${productId}`,
         {
           productUpdate,
         },
         {
-          headers: { authorization: `Bearer ${userInfo?.token}` },
+          headers: {authorization: `Bearer ${userInfo?.token}`},
         },
       );
 
-      dispatch({ type: 'UPDATE_SUCCESS' });
+      dispatch({type: 'UPDATE_SUCCESS'});
 
       enqueueSnackbar('Produto atualizado com sucesso!', {
         variant: 'success',
@@ -165,7 +220,7 @@ const ProductEdit = ({ params }: any) => {
 
       router.push('/admin/products');
     } catch (err) {
-      dispatch({ type: 'UPDATE_FAIL' });
+      dispatch({type: 'UPDATE_FAIL'});
       enqueueSnackbar(getError(err), {
         variant: 'error',
         action,
@@ -182,19 +237,19 @@ const ProductEdit = ({ params }: any) => {
             <List>
               <NextLink href={'/admin/dashboard'}>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Admin Dashboard'} />
+                  <ListItemText primary={'Admin Dashboard'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/orders'} passHref>
                 <ListItem button component={'a'}>
-                  <ListItemText primary={'Pedidos'} />
+                  <ListItemText primary={'Pedidos'}/>
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
                 <ListItem selected button component={'a'}>
-                  <ListItemText primary={'Produtos'} />
+                  <ListItemText primary={'Produtos'}/>
                 </ListItem>
               </NextLink>
             </List>
@@ -209,7 +264,7 @@ const ProductEdit = ({ params }: any) => {
                 </Typography>
               </ListItem>
               <ListItem>
-                {loading && <CircularProgress />}
+                {loading && <CircularProgress/>}
                 {error && (
                   <Typography className={classes.error}>{error}</Typography>
                 )}
@@ -224,8 +279,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'name'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -245,8 +300,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'slug'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -266,8 +321,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'price'}
                           control={control}
                           defaultValue={0}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -287,8 +342,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'image'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -303,13 +358,26 @@ const ProductEdit = ({ params }: any) => {
                           )}
                         />
                       </ListItem>
+
+                      <ListItem>
+                        <Button
+                          variant={'contained'}
+                          component={'label'}
+                          color={'primary'}
+                        >
+                          Enviar arquivo
+                          <input type={'file'} onChange={uploadHandler} hidden/>
+                        </Button>
+                        {loadingUpload && <CircularProgress/>}
+                      </ListItem>
+
                       <ListItem>
                         <Controller
                           name={'category'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -331,8 +399,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'brand'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -352,8 +420,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'countInStock'}
                           control={control}
                           defaultValue={0}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -375,8 +443,8 @@ const ProductEdit = ({ params }: any) => {
                           name={'description'}
                           control={control}
                           defaultValue={''}
-                          rules={{ required: true }}
-                          render={({ field }) => (
+                          rules={{required: true}}
+                          render={({field}) => (
                             <TextField
                               variant={'outlined'}
                               fullWidth
@@ -403,7 +471,7 @@ const ProductEdit = ({ params }: any) => {
                         >
                           Atualizar
                         </Button>
-                        {loadingUpdate && <CircularProgress />}
+                        {loadingUpdate && <CircularProgress/>}
                       </ListItem>
                     </List>
                   </form>

@@ -93,7 +93,7 @@ const AdminDashboard = () => {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-    fetchData().then();
+    fetchData();
   }, [userInfo, router]);
 
   return (

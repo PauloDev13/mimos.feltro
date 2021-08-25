@@ -1,5 +1,6 @@
-import nc from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
+import nc from 'next-connect';
+
 import db from '../../../../utils/db';
 import Order from '../../../../model/Order';
 import { isAuth } from '../../../../utils/auth';

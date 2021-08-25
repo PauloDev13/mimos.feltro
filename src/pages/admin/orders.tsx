@@ -77,8 +77,8 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
 }
 
 const AdminOrder = () => {
-  const router: any = useRouter();
   const { state } = useContext(Store);
+  const router: any = useRouter();
   const [{ loading, orders, error }, dispatch] = useReducer(reducer, {
     loading: true,
     orders: [],
@@ -107,7 +107,7 @@ const AdminOrder = () => {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-    fetchData().then();
+    fetchData();
   }, [userInfo, router]);
 
   return (

@@ -203,7 +203,7 @@ const Order = ({ params }: any) => {
       successDeliver ||
       (order._id && order._id !== orderId)
     ) {
-      fetchOrder().then();
+      fetchOrder();
 
       if (successPay) {
         dispatch({ type: 'PAY_RESET' });
@@ -227,18 +227,18 @@ const Order = ({ params }: any) => {
 
         paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
       };
-      loadPaypalScript().then();
+      loadPaypalScript();
     }
   }, [
     order,
     successPay,
     successDeliver,
-    dispatch,
-    orderId,
-    order._id,
-    router,
-    userInfo,
-    paypalDispatch,
+    // dispatch,
+    // orderId,
+    // order._id,
+    // router,
+    // userInfo,
+    //paypalDispatch,
   ]);
 
   const createOrder = (data: any, actions: any) => {
