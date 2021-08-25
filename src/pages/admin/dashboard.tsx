@@ -119,6 +119,12 @@ const AdminDashboard = () => {
                   <ListItemText primary={'Produtos'} />
                 </ListItem>
               </NextLink>
+
+              <NextLink href={'/admin/users'} passHref>
+                <ListItem button component={'a'}>
+                  <ListItemText primary={'Usuários'} />
+                </ListItem>
+              </NextLink>
             </List>
           </Card>
         </Grid>

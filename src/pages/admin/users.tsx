@@ -34,21 +34,17 @@ interface ActionProps {
 
 interface StateProps {
   loading: boolean;
-  loadingCreate: boolean;
   loadingDelete: boolean;
   successDelete: boolean;
-  products: ISummaryProduct[];
+  users: ISummaryUsers[];
   error: string;
-  // errorCreate: string;
 }
 
-interface ISummaryProduct {
+interface ISummaryUsers {
   _id: string;
   name: string;
-  price: number;
-  category: string;
-  countInStock: number;
-  rating: number;
+  email: string;
+  isAdmin: boolean;
 }
 
 function reducer(state: StateProps, action: ActionProps): StateProps {
@@ -64,7 +60,7 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
       return {
         ...state,
         loading: false,
-        products: action.payload,
+        users: action.payload,
         error: '',
       };
     }
@@ -73,24 +69,6 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
         ...state,
         loading: false,
         error: action.payload,
-      };
-    }
-    case 'CREATE_REQUEST': {
-      return {
-        ...state,
-        loadingCreate: true,
-      };
-    }
-    case 'CREATE_SUCCESS': {
-      return {
-        ...state,
-        loadingCreate: false,
-      };
-    }
-    case 'CREATE_FAIL': {
-      return {
-        ...state,
-        loadingCreate: false,
       };
     }
     case 'DELETE_REQUEST': {
@@ -124,73 +102,37 @@ function reducer(state: StateProps, action: ActionProps): StateProps {
   }
 }
 
-const AdminProduct = () => {
+const AdminUser = () => {
   const router: any = useRouter();
   const { state } = useContext(Store);
-  const [
-    { loading, products, error, loadingCreate, loadingDelete, successDelete },
-    dispatch,
-  ] = useReducer(reducer, {
-    loading: false,
-    loadingCreate: false,
-    loadingDelete: false,
-    successDelete: false,
-    products: [],
-    error: '',
-  });
+  const [{ loading, users, error, loadingDelete, successDelete }, dispatch] =
+    useReducer(reducer, {
+      loading: false,
+      loadingDelete: false,
+      successDelete: false,
+      users: [],
+      error: '',
+    });
 
   const { userInfo } = state;
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
 
-  const createHandler = async () => {
-    if (!window.confirm('Criar um novo produto?')) {
-      return;
-    }
-
-    try {
-      dispatch({ type: 'CREATE_REQUEST' });
-
-      const { data } = await axios.post(
-        `/api/admin/products`,
-        {},
-        {
-          headers: {
-            authorization: `Bearer ${userInfo?.token}`,
-          },
-        },
-      );
-
-      dispatch({ type: 'CREATE_SUCCESS' });
-      enqueueSnackbar('Produto criado com sucesso', {
-        variant: 'success',
-        action,
-      });
-      router.push(`/admin/product/${data.product._id}`);
-    } catch (err) {
-      dispatch({ type: 'CREATE_FAIL' });
-      enqueueSnackbar(getError(err), {
-        variant: 'error',
-        action,
-      });
-    }
-  };
-
-  const deleteHandler = async (productId: string) => {
-    if (!window.confirm('Excluir o produto?')) {
+  const deleteHandler = async (userId: string) => {
+    if (!window.confirm('Excluir usuário?')) {
       return;
     }
 
     try {
       dispatch({ type: 'DELETE_REQUEST' });
-      await axios.delete(`/api/admin/products/${productId}`, {
+      await axios.delete(`/api/admin/users/${userId}`, {
         headers: {
           authorization: `Bearer ${userInfo?.token}`,
         },
       });
 
       dispatch({ type: 'DELETE_SUCCESS' });
-      enqueueSnackbar('Produto excluído com sucesso', {
+      enqueueSnackbar('Usuário excluído com sucesso', {
         variant: 'success',
         action,
       });
@@ -211,7 +153,7 @@ const AdminProduct = () => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/admin/products`, {
+        const { data } = await axios.get(`/api/admin/users`, {
           headers: {
             authorization: `Bearer ${userInfo?.token}`,
           },
@@ -248,13 +190,13 @@ const AdminProduct = () => {
               </NextLink>
 
               <NextLink href={'/admin/products'} passHref>
-                <ListItem selected button component={'a'}>
+                <ListItem button component={'a'}>
                   <ListItemText primary={'Produtos'} />
                 </ListItem>
               </NextLink>
 
               <NextLink href={'/admin/users'} passHref>
-                <ListItem button component={'a'}>
+                <ListItem selected button component={'a'}>
                   <ListItemText primary={'Usuários'} />
                 </ListItem>
               </NextLink>
@@ -267,21 +209,11 @@ const AdminProduct = () => {
             <List>
               <ListItem>
                 <Grid container>
-                  <Grid alignItems={'flex-start'} item xs={6}>
+                  <Grid item xs={6}>
                     <Typography component={'h1'} variant={'h1'}>
-                      Produtos
+                      Usuários
                     </Typography>
                     {loadingDelete && <CircularProgress />}
-                  </Grid>
-                  <Grid alignItems={'flex-end'} item xs={6}>
-                    <Button
-                      onClick={createHandler}
-                      color={'primary'}
-                      variant={'contained'}
-                    >
-                      Novo produto
-                    </Button>
-                    {loadingCreate && <CircularProgress />}
                   </Grid>
                 </Grid>
               </ListItem>
@@ -297,42 +229,32 @@ const AdminProduct = () => {
                         <TableRow>
                           <TableCell>ID</TableCell>
                           <TableCell>NOME</TableCell>
-                          <TableCell align={'right'}>PREÇO</TableCell>
-                          <TableCell>CATEGORIA</TableCell>
-                          <TableCell align={'center'}>ESTOQUE</TableCell>
-                          <TableCell align={'center'}>AVALIAÇÃO</TableCell>
+                          <TableCell>EMAIL</TableCell>
+                          <TableCell>ADMINISTRADOR</TableCell>
                           <TableCell align={'center'}>AÇÃO</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {products.map((product) => (
-                          <TableRow key={product._id}>
+                        {users.map((user) => (
+                          <TableRow key={user._id}>
+                            <TableCell>{user._id.substring(20, 24)}</TableCell>
+                            <TableCell>{user.name}</TableCell>
+                            <TableCell>{user.email}</TableCell>
                             <TableCell>
-                              {product._id.substring(20, 24)}
-                            </TableCell>
-                            <TableCell>{product.name}</TableCell>
-                            <TableCell align={'right'}>
-                              R$ {product.price}
-                            </TableCell>
-                            <TableCell>{product.category}</TableCell>
-                            <TableCell align={'center'}>
-                              {product.countInStock}
-                            </TableCell>
-                            <TableCell align={'center'}>
-                              {product.rating}
+                              {user.isAdmin ? 'SIM' : 'NÃO'}
                             </TableCell>
                             <TableCell align={'center'}>
                               <NextLink
-                                href={`/admin/product/${product._id}`}
+                                href={`/admin/user/${user._id}`}
                                 passHref
                               >
                                 <Button size={'small'} variant={'contained'}>
                                   Editar
                                 </Button>
                               </NextLink>
-                              &nbsp;
+                              &nbsp; &nbsp;
                               <Button
-                                onClick={() => deleteHandler(product._id)}
+                                onClick={() => deleteHandler(user._id)}
                                 size={'small'}
                                 variant={'contained'}
                               >
@@ -353,4 +275,4 @@ const AdminProduct = () => {
     </Layout>
   );
 };
-export default AdminProduct;
+export default AdminUser;
