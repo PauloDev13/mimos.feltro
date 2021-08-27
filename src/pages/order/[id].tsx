@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // imports externos
-import { useContext, useEffect, useReducer } from 'react';
-import { useRouter } from 'next/router';
+import {useContext, useEffect, useReducer} from 'react';
+import {useRouter} from 'next/router';
 import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import { useSnackbar } from 'notistack';
+import {PayPalButtons, usePayPalScriptReducer} from '@paypal/react-paypal-js';
+import {useSnackbar} from 'notistack';
 import {
   Button,
   Card,
@@ -24,11 +25,11 @@ import {
   Typography,
 } from '@material-ui/core';
 // imports locais
-import { Store } from '../../utils/Store';
+import {Store} from '../../utils/Store';
 import useStyles from '../../utils/styles';
-import { getError } from '../../utils/error';
-import { IActionsProps } from '../../interfaces/IActionsProps';
-import { InitialOrder, IOrder } from '../../interfaces/IOrder';
+import {getError} from '../../utils/error';
+import {IActionsProps} from '../../interfaces/IActionsProps';
+import {InitialOrder, IOrder} from '../../interfaces/IOrder';
 import action from '../../components/ActionSnackbar';
 import Layout from '../../components/Layout';
 
@@ -226,17 +227,8 @@ const Order = ({params}: any) => {
       };
       loadPaypalScript();
     }
-  }, [
-    order,
-    successPay,
-    successDeliver,
-    // dispatch,
-    // orderId,
-    // order._id,
-    // router,
-    // userInfo,
-    //paypalDispatch,
-  ]);
+  }, [order, successPay, successDeliver,]);
+  // [order,successPay,successDeliver,dispatch,orderId,order._id,router,userInfo,paypalDispatch]);
 
   const createOrder = (data: any, actions: any) => {
     return actions.order

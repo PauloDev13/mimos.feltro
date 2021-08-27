@@ -42,7 +42,7 @@ const Login = () => {
     if (userInfo) {
       router.push(redirect || '/');
     }
-  }, [router, userInfo, redirect]);
+  }, []); //[router, userInfo, redirect]);
 
   const submitHandler = async ({email, password}: IFormValues): Promise<void> => {
     try {

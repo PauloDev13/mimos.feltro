@@ -47,7 +47,7 @@ const Profile = () => {
     setValue('name', userInfo.name);
     setValue('email', userInfo.email);
 
-  }, [router, userInfo, setValue]);
+  }, []); // [router, userInfo, setValue]);
 
   const submitHandler = async (
     {

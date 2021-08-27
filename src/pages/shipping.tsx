@@ -46,16 +46,7 @@ const Shipping = () => {
     setValue('city', city);
     setValue('postalCode', postalCode);
     setValue('country', country);
-  }, [
-    router,
-    setValue,
-    userInfo,
-    address,
-    city,
-    country,
-    fullName,
-    postalCode,
-  ]);
+  }, []); //[router, setValue, userInfo, address, city, country, fullName, postalCode,]);
 
   const submitHandler = (
     {

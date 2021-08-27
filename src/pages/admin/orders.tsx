@@ -109,7 +109,7 @@ const AdminOrder = () => {
       }
     };
     fetchData();
-  }, [userInfo, router]);
+  }, []); //[userInfo, router]);
 
   return (
     <Layout title={'Histórico de Pedidos'}>

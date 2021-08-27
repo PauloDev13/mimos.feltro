@@ -59,7 +59,6 @@ function reducer(state: StateProps, action: IActionsProps): StateProps {
         error: action.payload,
       };
     }
-
     default:
       return state;
   }
@@ -90,14 +89,13 @@ const OrderHistory = () => {
             authorization: `Bearer ${userInfo?.token}`,
           },
         });
-        console.log('PÁGINA HISTORY' + JSON.stringify(orders));
         dispatch({type: 'FETCH_SUCCESS', payload: data});
       } catch (err) {
         dispatch({type: 'FETCH_FAIL', payload: getError(err)});
       }
     };
     fetchOrders();
-  }, [userInfo, router, orders]);
+  }, []); //[router, userInfo]);
 
   return (
     <Layout title={'Histórico de Pedidos'}>

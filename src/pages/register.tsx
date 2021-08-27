@@ -41,7 +41,7 @@ const Register = () => {
     if (userInfo) {
       router.push('/');
     }
-  }, [router, userInfo]);
+  }, []); // [router, userInfo]);
 
   const submitHandler = async (
     {

@@ -161,7 +161,7 @@ const ProductEdit = ({params}: any) => {
 
       fetchData();
     }
-  }, [productId, router, setValue, userInfo]);
+  }, []); //[productId, router, setValue, userInfo]);
 
   const uploadHandler = async (e: any): Promise<void> => {
     const file = e.target.files[0];

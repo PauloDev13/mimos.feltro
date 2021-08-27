@@ -97,7 +97,7 @@ const PlaceOrder = () => {
     if (cartItems.length === 0) {
       router.push('/cart');
     }
-  }, [paymentMethod, router, cartItems]);
+  }, []); // [paymentMethod, router, cartItems]);
 
   return (
     <Layout title={'Finalizando Pedido'}>

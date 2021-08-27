@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { NextPage } from 'next';
-import Head from 'next/head';
-// import dynamic from 'next/dynamic';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-
+import NextLink from 'next/link';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import Cookies from 'js-cookie';
 
 import {
@@ -189,5 +188,5 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     </div>
   );
 };
-// export default dynamic(() => Promise.resolve(Layout), {ssr: false});
-export default Layout;
+export default dynamic(() => Promise.resolve(Layout), {ssr: false});
+// export default Layout;

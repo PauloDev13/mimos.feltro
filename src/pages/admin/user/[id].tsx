@@ -133,7 +133,7 @@ const UserEdit = ({params}: any) => {
 
       fetchData();
     }
-  }, [userId, router, setValue, userInfo]);
+  }, []); //[userId, router, setValue, userInfo]);
 
   const submitHandler = async (userUpdate: IFormUpdateUser): Promise<void> => {
     const {name} = userUpdate;

@@ -166,7 +166,7 @@ const AdminUser = () => {
     } else {
       fetchData();
     }
-  }, [userInfo, router, successDelete]);
+  }, [successDelete]); // [userInfo, router, successDelete]);
 
   return (
     <Layout title={'Produtos'}>

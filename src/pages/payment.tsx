@@ -52,7 +52,7 @@ const Payment = () => {
     } else {
       setPaymentMethod(Cookies.get('paymentMethod') || '');
     }
-  }, [router, shippingAddress.address]);
+  }, []); // [router, shippingAddress.address]);
 
   return (
     <Layout title={'Forma de pagamento'}>
