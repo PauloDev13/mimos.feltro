@@ -213,9 +213,9 @@ const Register = () => {
             </Button>
           </ListItem>
           <ListItem>
-            Já possui cadastro? &nbsp;
+            É cadastrado? &nbsp;
             <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
-              <Link>Faça login aqui.</Link>
+              <Link>Entre aqui.</Link>
             </NextLink>
           </ListItem>
         </List>

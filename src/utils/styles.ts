@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
   navbar: {
-    backgroundColor: '#11b8a1',
+    backgroundColor: '#454747',
     '& a': {
       color: '#ffffff',
       marginLeft: 10,
@@ -43,6 +43,15 @@ const useStyles = makeStyles({
   },
   fullWidth: {
     width: '100%',
+  },
+  reviewForm: {
+    maxWidth: 800,
+    width: '100%',
+  },
+  reviewItem: {
+    marginRight: '1rem',
+    borderRight: '1px #808080 solid',
+    paddingRight: '1rem',
   },
   divLink: {
     fontSize: '1.2rem',

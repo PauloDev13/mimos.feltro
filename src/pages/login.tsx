@@ -140,9 +140,9 @@ const Login = () => {
             </Button>
           </ListItem>
           <ListItem>
-            Ainda não é cadastrado? &nbsp;
+            Não tem cadastro? &nbsp;
             <NextLink href={`/register?redirect=${redirect || '/'}`} passHref>
-              <Link>Faça seu cadastro aqui</Link>
+              <Link>Cadastre-se aqui</Link>
             </NextLink>
           </ListItem>
         </List>

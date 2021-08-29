@@ -15,6 +15,7 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
+import Rating from '@material-ui/lab/Rating';
 // imports locais
 import { Store } from '../utils/Store';
 import db from '../utils/db';
@@ -68,6 +69,7 @@ const Home: NextPage<IProducts> = ({ products }) => {
                     />
                     <CardContent>
                       <Typography>{product.name}</Typography>
+                      <Rating value={product.rating} readOnly />
                     </CardContent>
                   </CardActionArea>
                 </NextLink>
@@ -93,7 +95,7 @@ export default Home;
 
 export async function getServerSideProps() {
   await db.connect();
-  const products: IProduct[] = await Product.find({}).lean();
+  const products: IProduct[] = await Product.find({}, '-reviews').lean();
   await db.disconnected();
 
   return {

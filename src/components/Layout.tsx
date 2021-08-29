@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Cookies from 'js-cookie';
@@ -107,7 +108,13 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
           <Toolbar>
             <NextLink href={'/'} passHref>
               <Link>
-                <Typography className={classes.brand}>Mimos Feltro</Typography>
+                <Image
+                  src={'/images/logo_mascote.png'}
+                  height={'60vh'}
+                  width={'100vh'}
+                  alt={'Logomarca'}
+                />
+                {/*<Typography className={classes.brand}>Mimos Feltro</Typography>*/}
               </Link>
             </NextLink>
             <div className={classes.grow}></div>
