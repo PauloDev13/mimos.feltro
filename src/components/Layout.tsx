@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import axios from 'axios';
@@ -19,6 +18,7 @@ import {
   Divider,
   Drawer,
   IconButton,
+  InputBase,
   Link,
   List,
   ListItem,
@@ -32,6 +32,7 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CancelIcon from '@material-ui/icons/Cancel';
+import SearchIcon from '@material-ui/icons/Search';
 
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
@@ -116,9 +117,16 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchCategories().then();
-  }, []);
+  const [query, setQuery] = useState('');
+
+  const submitHandler = (e: any) => {
+    e.preventDefault();
+    router.push(`search?query=${query}`);
+  };
+
+  const queryChangeHandler = (e: any) => {
+    setQuery(e.target.value);
+  };
 
   const logoutClickHandler = () => {
     setAnchorEl(null);
@@ -129,6 +137,10 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     Cookies.remove('paymentMethod');
     router.push('/');
   };
+
+  useEffect(() => {
+    fetchCategories().then();
+  }, []);
 
   // @ts-ignore
   return (
@@ -147,6 +159,7 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
           <Toolbar className={classes.toolbar}>
             <Box display={'flex'} alignItems={'center'}>
               <IconButton
+                className={classes.menuButton}
                 onClick={sidebarOpenHandler}
                 edge={'start'}
                 aria-label={'open drawer'}
@@ -155,13 +168,15 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
               </IconButton>
               <NextLink href={'/'} passHref>
                 <Link>
-                  <Image
-                    src={'/images/logo_mascote.png'}
-                    height={'60vh'}
-                    width={'100vh'}
-                    alt={'Logomarca'}
-                  />
-                  {/*<Typography className={classes.brand}>Mimos Feltro</Typography>*/}
+                  {/*<Image*/}
+                  {/*  src={'/images/logo.png'}*/}
+                  {/*  height={'50vh'}*/}
+                  {/*  width={'80vh'}*/}
+                  {/*  alt={'Logomarca'}*/}
+                  {/*/>*/}
+                  <Typography className={classes.brand}>
+                    Mimos Feltro
+                  </Typography>
                 </Link>
               </NextLink>
             </Box>
@@ -204,7 +219,26 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                 ))}
               </List>
             </Drawer>
-            <div className={classes.grow}></div>
+
+            <div className={classes.searchSection}>
+              <form onSubmit={submitHandler} className={classes.searchForm}>
+                <InputBase
+                  name={'query'}
+                  className={classes.searchInput}
+                  placeholder={'Buscar produtos'}
+                  onChange={queryChangeHandler}
+                />
+                <IconButton
+                  type={'submit'}
+                  className={classes.iconButton}
+                  arial-label={'search'}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </form>
+            </div>
+
+            {/*<div className={classes.grow}></div>*/}
             <div>
               <Switch checked={darkMode} onChange={darkModeHandler} />
               <NextLink href={'/cart'} passHref>
