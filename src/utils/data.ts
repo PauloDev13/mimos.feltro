@@ -35,6 +35,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular shirt',
+      reviews: [],
     },
     {
       name: 'Fit Shirt',
@@ -47,6 +48,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular shirt',
+      reviews: [],
     },
     {
       name: 'Slim Shirt',
@@ -59,6 +61,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular shirt',
+      reviews: [],
     },
     {
       name: 'Golf Pants',
@@ -71,6 +74,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'Smart looking pants',
+      reviews: [],
     },
     {
       name: 'Fit Pants',
@@ -83,6 +87,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular pants',
+      reviews: [],
     },
     {
       name: 'Classic Pants',
@@ -95,6 +100,7 @@ const data: IData = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular pants',
+      reviews: [],
     },
   ],
 };
