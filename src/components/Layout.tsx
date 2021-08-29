@@ -1,20 +1,28 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-
+import { useSnackbar } from 'notistack';
 import {
   AppBar,
   Badge,
+  Box,
   Button,
   Container,
   createTheme,
   CssBaseline,
+  Divider,
+  Drawer,
+  IconButton,
   Link,
+  List,
+  ListItem,
+  ListItemText,
   Menu,
   MenuItem,
   Switch,
@@ -22,8 +30,13 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
+import CancelIcon from '@material-ui/icons/Cancel';
+
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
+import { getError } from '../utils/error';
+import action from '../components/ActionSnackbar';
 
 interface LayoutProps {
   title?: string;
@@ -32,9 +45,13 @@ interface LayoutProps {
 
 const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
   const router: any = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const classes = useStyles();
 
   const { state, dispatch } = useContext(Store);
   const { darkMode, cart, userInfo } = state;
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [categories, setCategories] = useState(['']);
 
   const theme = createTheme({
     typography: {
@@ -60,8 +77,6 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     },
   });
 
-  const classes = useStyles();
-
   const darkModeHandler = () => {
     dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' });
     const newDarkMode = !darkMode;
@@ -82,6 +97,29 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     }
   };
 
+  const sidebarOpenHandler = () => {
+    setSidebarVisible(true);
+  };
+  const sidebarCloseHandler = () => {
+    setSidebarVisible(false);
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axios.get(`/api/products/categories`);
+      setCategories(data);
+    } catch (err) {
+      enqueueSnackbar(getError(err), {
+        variant: 'error',
+        action,
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories().then();
+  }, []);
+
   const logoutClickHandler = () => {
     setAnchorEl(null);
     dispatch({ type: 'USER_LOGOUT' });
@@ -91,6 +129,7 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
     Cookies.remove('paymentMethod');
     router.push('/');
   };
+
   // @ts-ignore
   return (
     <div>
@@ -105,33 +144,83 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppBar className={classes.navbar} position={'static'}>
-          <Toolbar>
-            <NextLink href={'/'} passHref>
-              <Link>
-                <Image
-                  src={'/images/logo_mascote.png'}
-                  height={'60vh'}
-                  width={'100vh'}
-                  alt={'Logomarca'}
-                />
-                {/*<Typography className={classes.brand}>Mimos Feltro</Typography>*/}
-              </Link>
-            </NextLink>
+          <Toolbar className={classes.toolbar}>
+            <Box display={'flex'} alignItems={'center'}>
+              <IconButton
+                onClick={sidebarOpenHandler}
+                edge={'start'}
+                aria-label={'open drawer'}
+              >
+                <MenuIcon className={classes.navbarButton} />
+              </IconButton>
+              <NextLink href={'/'} passHref>
+                <Link>
+                  <Image
+                    src={'/images/logo_mascote.png'}
+                    height={'60vh'}
+                    width={'100vh'}
+                    alt={'Logomarca'}
+                  />
+                  {/*<Typography className={classes.brand}>Mimos Feltro</Typography>*/}
+                </Link>
+              </NextLink>
+            </Box>
+            <Drawer
+              anchor={'left'}
+              open={sidebarVisible}
+              onClose={sidebarCloseHandler}
+            >
+              <List>
+                <ListItem>
+                  <Box
+                    display={'flex'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                  >
+                    <Typography>Compras por categoria</Typography>
+                    <IconButton
+                      onClick={sidebarCloseHandler}
+                      aria-label={'close'}
+                    >
+                      <CancelIcon />
+                    </IconButton>
+                  </Box>
+                </ListItem>
+                <Divider light />
+                {categories.map((category) => (
+                  <NextLink
+                    key={category}
+                    href={`search?category=${category}`}
+                    passHref
+                  >
+                    <ListItem
+                      onClick={sidebarCloseHandler}
+                      button
+                      component={'a'}
+                    >
+                      <ListItemText primary={category} />
+                    </ListItem>
+                  </NextLink>
+                ))}
+              </List>
+            </Drawer>
             <div className={classes.grow}></div>
             <div>
               <Switch checked={darkMode} onChange={darkModeHandler} />
               <NextLink href={'/cart'} passHref>
                 <Link>
-                  {cart.cartItems.length > 0 ? (
-                    <Badge
-                      color={'secondary'}
-                      badgeContent={cart.cartItems.length}
-                    >
-                      Seu Carrinho
-                    </Badge>
-                  ) : (
-                    'Seu Carrinho'
-                  )}
+                  <Typography component={'span'}>
+                    {cart.cartItems.length > 0 ? (
+                      <Badge
+                        color={'secondary'}
+                        badgeContent={cart.cartItems.length}
+                      >
+                        Seu Carrinho
+                      </Badge>
+                    ) : (
+                      'Seu Carrinho'
+                    )}
+                  </Typography>
                 </Link>
               </NextLink>
               {userInfo?.name ? (
@@ -177,7 +266,9 @@ const Layout: NextPage<LayoutProps> = ({ title, description, children }) => {
                 </>
               ) : (
                 <NextLink href={'/login'} passHref>
-                  <Link>Entrar</Link>
+                  <Link>
+                    <Typography component={'span'}>Entrar</Typography>
+                  </Link>
                 </NextLink>
               )}
             </div>
